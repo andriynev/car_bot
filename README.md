@@ -5,7 +5,7 @@
 
 To setup all services need to execute the command (need ensure that you have installed docker and docker-compose):
 ```
-docker-compose docker-compose.yml up -d
+docker-compose -f docker-compose.yml up -d
 ```
 
 To test connection to Mongo you can use command:

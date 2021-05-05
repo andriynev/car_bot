@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 echo 'init mongo user ...'
 mongo 127.0.0.1/car_bot_db --eval "
     db.createUser({
