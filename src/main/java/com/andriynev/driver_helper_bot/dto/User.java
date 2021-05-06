@@ -15,6 +15,9 @@ public class User {
     private State state;
     private List<String> subscription;
 
+    public User() {
+    }
+
     public User(String id, Long chatID, State state, List<String> subscription) {
         this.id = id;
         this.chatID = chatID;
@@ -58,5 +61,12 @@ public class User {
 
     public void setSubscription(List<String> subscription) {
         this.subscription = subscription;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "User[id=%s, chatID='%d', state={type='%s', step='%s'}]",
+                id, chatID, state.getType(), state.getStep());
     }
 }
