@@ -32,7 +32,7 @@ public class DispatcherService {
         }
         User user = identifyUser(update.getMessage().getChatId());
 
-        return routerService.route(user, inputMessage);
+        return responseService.sendMassage(routerService.route(user, inputMessage));
 
     }
 

@@ -5,6 +5,7 @@ import com.andriynev.driver_helper_bot.dto.InputMessage;
 import com.andriynev.driver_helper_bot.dto.OutputMessage;
 import com.andriynev.driver_helper_bot.dto.State;
 import com.andriynev.driver_helper_bot.dto.User;
+import com.andriynev.driver_helper_bot.handlers.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -26,7 +27,7 @@ public class RouterService {
 
     }
 
-    public BotApiMethod<?> route(User user, InputMessage inputMessage) {
+    public OutputMessage route(User user, InputMessage inputMessage) {
         String message = inputMessage.getMessage();
         State newState;
         switch (message) {
@@ -46,7 +47,6 @@ public class RouterService {
                 //user.setState(newState);
                 break;
             default:
-
                 break;
         }
 
