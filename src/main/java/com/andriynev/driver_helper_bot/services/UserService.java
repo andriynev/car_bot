@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class UserService {
     private UserRepository userRepository;
-    private static final State initialState = new State("main_menu", "initial");
+    public static final State initialState = new State("MainMenu", "initial");
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -33,11 +33,11 @@ public class UserService {
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
         System.out.println("UserService is running........");
-        userRepository.deleteAll();
+        //userRepository.deleteAll();
 
         // save a couple of customers
-        userRepository.save(new User(12346L, new State("main_menu", "initial"), new ArrayList<>()));
-        userRepository.save(new User(12345L, new State("main_menu", "initial"), new ArrayList<>()));
+        //userRepository.save(new User(12346L, new State("main_menu", "initial"), new ArrayList<>()));
+        //userRepository.save(new User(12345L, new State("main_menu", "initial"), new ArrayList<>()));
 
         // fetch all customers
         System.out.println("Customers found with findAll():");

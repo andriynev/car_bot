@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
-public class ExpertService implements Handler {
-
-    private final static String type = "ExpertService";
+public class StoService implements Handler {
+    private final static String type = "StoService";
 
     @Override
     public SendMessage handle(State state, InputMessage userInput) {

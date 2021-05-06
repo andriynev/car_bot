@@ -30,7 +30,10 @@ public class DispatcherService {
         } else {
             inputMessage = getDirectMessage(update.getMessage());
         }
-        return null;
+        User user = identifyUser(update.getMessage().getChatId());
+
+        return routerService.route(user, inputMessage);
+
     }
 
     private InputMessage getCallBackMessage(CallbackQuery callbackQuery) {
