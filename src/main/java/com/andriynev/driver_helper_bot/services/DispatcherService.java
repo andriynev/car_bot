@@ -4,11 +4,13 @@ package com.andriynev.driver_helper_bot.services;
 import com.andriynev.driver_helper_bot.dto.InputMessage;
 import com.andriynev.driver_helper_bot.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+@Service
 public class DispatcherService {
     private UserService userService;
     private RouterService routerService;

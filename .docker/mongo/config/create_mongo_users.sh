@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo 'init mongo user ...'
+echo 'init mongo user ...';
 mongo 127.0.0.1/car_bot_db --eval "
     db.createUser({
         user: \"car_bot\",
@@ -9,5 +9,5 @@ mongo 127.0.0.1/car_bot_db --eval "
             db: \"car_bot_db\"
         }]
     });
-";
-echo 'init mongo user done ...'
+"; 
+echo 'init mongo user done ...';
