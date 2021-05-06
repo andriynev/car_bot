@@ -1,9 +1,9 @@
 package com.andriynev.driver_helper_bot.dto;
 
-public class Message {
+public class OutputMessage {
     private String text;
 
-    public Message(String text) {
+    public OutputMessage(String text) {
         this.text = text;
     }
 

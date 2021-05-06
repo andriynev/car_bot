@@ -1,19 +1,28 @@
 package com.andriynev.driver_helper_bot.dto;
 
+import org.springframework.data.annotation.Id;
+
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class User {
     @NotNull
+    @Id
     private String id;
     @NotNull
-    private String chatID;
+    private Long chatID;
     @NotNull
     private State state;
     private List<String> subscription;
 
-    public User(String id, String chatID, State state, List<String> subscription) {
+    public User(String id, Long chatID, State state, List<String> subscription) {
         this.id = id;
+        this.chatID = chatID;
+        this.state = state;
+        this.subscription = subscription;
+    }
+
+    public User(Long chatID, State state, List<String> subscription) {
         this.chatID = chatID;
         this.state = state;
         this.subscription = subscription;
@@ -27,11 +36,11 @@ public class User {
         this.id = id;
     }
 
-    public String getChatID() {
+    public Long getChatID() {
         return chatID;
     }
 
-    public void setChatID(String chatID) {
+    public void setChatID(Long chatID) {
         this.chatID = chatID;
     }
 
