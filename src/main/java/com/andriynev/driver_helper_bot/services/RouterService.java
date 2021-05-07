@@ -2,6 +2,7 @@ package com.andriynev.driver_helper_bot.services;
 
 import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.handlers.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class RouterService {
             case "MainMenu":
                 newState = UserService.initialState;
                 break;
+            case "/state":
+                return new Output(user.getState(), ResponseType.MENU, user.getState().toString());
 
             default:
                 newState = user.getState();

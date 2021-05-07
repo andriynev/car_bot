@@ -12,7 +12,9 @@ public class InputMessage {
     }
 
     public InputMessage() {
-
+        type = "direct";
+        message = "";
+        chatID = 0L;
     }
 
     public String getType() {

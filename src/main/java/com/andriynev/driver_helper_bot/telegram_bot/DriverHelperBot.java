@@ -59,6 +59,7 @@ public class DriverHelperBot extends TelegramWebhookBot {
     public void sendMessage(SendMessage message) {
         try {
             execute(message);
+
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

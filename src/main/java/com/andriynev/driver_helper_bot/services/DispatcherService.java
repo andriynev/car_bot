@@ -33,7 +33,7 @@ public class DispatcherService {
         } else {
             inputMessage = getDirectMessage(update.getMessage());
         }
-        User user = identifyUser(update.getMessage().getChatId());
+        User user = identifyUser(inputMessage.getChatID());
         Output out = routerService.route(user, inputMessage);
         user.setState(out.getState());
         user = userService.save(user);
@@ -50,7 +50,7 @@ public class DispatcherService {
     }
 
     private InputMessage getCallBackMessage(CallbackQuery callbackQuery) {
-        return new InputMessage("callback", callbackQuery.getMessage().getText(), callbackQuery.getMessage().getChatId());
+        return new InputMessage("callback", callbackQuery.getData(), callbackQuery.getMessage().getChatId());
     }
 
     private InputMessage getDirectMessage(Message message) {

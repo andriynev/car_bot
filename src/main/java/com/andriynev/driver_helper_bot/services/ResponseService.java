@@ -37,8 +37,9 @@ public class ResponseService {
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case QUESTION:
-                sendMenu(outputMessage);
-                replyToUser = sendMessageForm(outputMessage);
+//                endMenu(outputMessage);
+                replyToUser = (SendMessage) sendMessageForm(outputMessage);
+
                 break;
             default:
                 break;
@@ -47,9 +48,9 @@ public class ResponseService {
     }
 
     public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg) {
-        sendFinalMessage(finalMsg);
+        //sendFinalMessage(finalMsg);
 
-        sendMenu(secondaryMsg);
+//        sendMenu(secondaryMsg);
         return sendMessageForm(secondaryMsg);
     }
 
@@ -61,11 +62,11 @@ public class ResponseService {
     private SendMessage sendMessageForm(OutputMessage outputMessage) {
         SendMessage sendMessage;
         sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
-        if (outputMessage.getReplyButtons() != null) {
+        if (outputMessage.getReplyButtons() != null && !outputMessage.getReplyButtons().isEmpty()) {
             ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
         }
-        if (outputMessage.getInlineButtons() != null) {
+        if (outputMessage.getInlineButtons() != null && !outputMessage.getInlineButtons().isEmpty()) {
             InlineKeyboardMarkup inlineKeyboardMarkup = getInlineKeyboard(outputMessage.getInlineButtons());
             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         }
@@ -74,10 +75,11 @@ public class ResponseService {
     }
 
     private void sendMenu(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(outputMessage.getChatID(), "");
-        ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-
+        SendMessage sendMessage = initMessage(outputMessage.getChatID(), "Menu");
+        if (outputMessage.getReplyButtons() != null) {
+            ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
+            sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        }
         driverHelperBot.sendMessage(sendMessage);
     }
 
@@ -119,7 +121,13 @@ public class ResponseService {
                 keyboard.add(keyboardRow);
                 keyboardRow = new ArrayList<>();
             }
-            keyboardRow.add(new InlineKeyboardButton(button));
+            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+            inlineKeyboardButton.setText(button);
+            inlineKeyboardButton.setCallbackData(button);
+            keyboardRow.add(inlineKeyboardButton);
+        }
+        if (!keyboardRow.isEmpty()) {
+            keyboard.add(keyboardRow);
         }
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
