@@ -42,11 +42,11 @@ public class Output {
         this.message = message;
     }
 
-    public Output(State state, ResponseType type, String message, List<String> replyButtons) {
+    public Output(State state, ResponseType type, String message, List<String> inlineButtons) {
         this.state = state;
         this.type = type;
         this.message = message;
-        this.replyButtons = replyButtons;
+        this.inlineButtons = inlineButtons;
     }
 
     public ResponseType getType() {
