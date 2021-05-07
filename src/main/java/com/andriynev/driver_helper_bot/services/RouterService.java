@@ -3,23 +3,26 @@ package com.andriynev.driver_helper_bot.services;
 import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
+import com.andriynev.driver_helper_bot.handlers.GroupHandler;
 import com.andriynev.driver_helper_bot.handlers.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RouterService {
-    private Map<String, Handler> handlers = new HashMap<>();
+    private final Map<String, Handler> handlers = new HashMap<>();
 
     @Autowired
-    public RouterService(Handler expertService, Handler mainMenuService, Handler stoService) {
+    public RouterService(Handler expertService, GroupHandler mainMenuService, Handler stoService) {
         handlers.put(expertService.getType(), expertService);
-        handlers.put(mainMenuService.getType(), mainMenuService);
         handlers.put(stoService.getType(), stoService);
+
+        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, stoService));
+        mainMenuService.setHandlers(group);
+        handlers.put(mainMenuService.getType(), mainMenuService);
 
     }
 
@@ -28,14 +31,16 @@ public class RouterService {
         State newState;
         switch (message) {
             case "/start":
-            case "MainMenu":
+            case "/main_menu":
+            case "Main menu":
                 newState = UserService.initialState;
                 break;
-            case "/state":
-                return new Output(user.getState(), ResponseType.MENU, user.getState().toString());
 
             default:
                 newState = user.getState();
+                if (!handlers.containsKey(newState.getType())) {
+                    newState = UserService.initialState;
+                }
                 break;
         }
 

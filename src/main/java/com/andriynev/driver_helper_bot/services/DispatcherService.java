@@ -54,7 +54,11 @@ public class DispatcherService {
     }
 
     private InputMessage getDirectMessage(Message message) {
-        return new InputMessage("direct", message.getText(), message.getChatId());
+        return new InputMessage(
+                "direct",
+                message.getText(),
+                message.getChatId()
+        );
     }
 
     private User identifyUser(Long chatID) {

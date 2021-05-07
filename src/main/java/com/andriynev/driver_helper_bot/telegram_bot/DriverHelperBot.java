@@ -2,7 +2,6 @@ package com.andriynev.driver_helper_bot.telegram_bot;
 
 import com.andriynev.driver_helper_bot.services.DispatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,7 +14,7 @@ public class DriverHelperBot extends TelegramWebhookBot {
     private String botUserName;
     private String botToken;
 
-    private DispatcherService dispatcherService;
+    private final DispatcherService dispatcherService;
 
     @Autowired
     public DriverHelperBot(DispatcherService dispatcherService) {
@@ -37,11 +36,47 @@ public class DriverHelperBot extends TelegramWebhookBot {
         return webHookPath;
     }
 
+    private boolean isValidWebHookUpdate(Update update) {
+        if (update.hasCallbackQuery()) {
+            // validate callback params
+            if (update.getCallbackQuery().getMessage() == null) {
+                return false;
+            }
+
+            if (update.getCallbackQuery().getData() == null) {
+                return false;
+            }
+
+            if (update.getCallbackQuery().getMessage().getChat() == null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        // validate direct message params
+        if (!update.hasMessage()) {
+            return false;
+        }
+
+        if (!update.getMessage().hasText()) {
+            return false;
+        }
+
+        if (update.getMessage().getChat() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        BotApiMethod<?> replyMessageToUser = dispatcherService.handleUpdate(update);
+        if (!isValidWebHookUpdate(update)) {
+            return null;
+        }
 
-        return replyMessageToUser;
+        return dispatcherService.handleUpdate(update);
     }
 
     public void setWebHookPath(String webHookPath) {

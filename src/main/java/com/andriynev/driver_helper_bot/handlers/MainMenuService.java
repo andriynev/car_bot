@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class MainMenuService implements Handler {
+public class MainMenuService implements GroupHandler {
     private final static String type = "MainMenu";
     private final static String initialStep = "initial";
     private final static String viewMenuStep = "view_menu";
-    private final static List<String> buttons = new ArrayList<>(Arrays.asList("Expert", "Sto", "Tutorial"));
+    private final List<String> buttons = new ArrayList<>();
 
     @Override
     public Output handle(State state, InputMessage userInput) {
@@ -56,4 +56,10 @@ public class MainMenuService implements Handler {
         return type;
     }
 
+    @Override
+    public void setHandlers(List<Handler> group) {
+        for (Handler handler: group) {
+            buttons.add(handler.getType());
+        }
+    }
 }

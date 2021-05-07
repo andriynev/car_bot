@@ -37,8 +37,8 @@ public class ResponseService {
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case QUESTION:
-//                endMenu(outputMessage);
-                replyToUser = (SendMessage) sendMessageForm(outputMessage);
+                sendMenu(outputMessage);
+                replyToUser = sendMessageForm(outputMessage);
 
                 break;
             default:
@@ -48,9 +48,9 @@ public class ResponseService {
     }
 
     public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg) {
-        //sendFinalMessage(finalMsg);
+        sendFinalMessage(finalMsg);
 
-//        sendMenu(secondaryMsg);
+        sendMenu(secondaryMsg);
         return sendMessageForm(secondaryMsg);
     }
 
@@ -75,11 +75,13 @@ public class ResponseService {
     }
 
     private void sendMenu(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(outputMessage.getChatID(), "Menu");
-        if (outputMessage.getReplyButtons() != null) {
-            ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
-            sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        }
+        SendMessage sendMessage = initMessage(outputMessage.getChatID(), ".");
+
+        ArrayList<String> button = new ArrayList<>();
+        button.add("Main menu");
+        ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(button);
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+
         driverHelperBot.sendMessage(sendMessage);
     }
 
@@ -163,7 +165,8 @@ public class ResponseService {
 
         return sendMessage;
     }
-    private SendMessage initMessage (Long chatId, String textMessage) {
+
+    private SendMessage initMessage(Long chatId, String textMessage) {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
