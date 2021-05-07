@@ -4,44 +4,49 @@ import com.andriynev.driver_helper_bot.enums.ResponseType;
 
 import java.util.List;
 
-public class OutputMessage {
+public class Output {
     private ResponseType type;
     private String message;
     private List<String> replyButtons;
     private List<String> inlineButtons;
     private String picture;
-    private Long chatID;
+    private State state;
+    private boolean redirect;
 
-    public OutputMessage(ResponseType type, String message, List<String> replyButtons, String picture, Long chatID) {
+    public Output(State state, ResponseType type, String message, List<String> replyButtons, String picture) {
+        this.state = state;
         this.type = type;
         this.message = message;
         this.replyButtons = replyButtons;
         this.picture = picture;
-        this.chatID = chatID;
     }
 
-    public OutputMessage(ResponseType type, String message, List<String> replyButtons, List<String> inlineButtons, String picture, Long chatID) {
+    public Output(State state, ResponseType type, String message, List<String> replyButtons, List<String> inlineButtons, String picture) {
+        this.state = state;
         this.type = type;
         this.message = message;
         this.replyButtons = replyButtons;
         this.inlineButtons = inlineButtons;
         this.picture = picture;
-        this.chatID = chatID;
     }
 
-    public OutputMessage(ResponseType type, String message, Long chatID) {
+    public Output(State state, ResponseType type, String message) {
+        this.state = state;
         this.type = type;
         this.message = message;
-        this.chatID = chatID;
     }
 
-    public OutputMessage(Output output, Long chatID) {
-        this.type = output.getType();
-        this.message = output.getMessage();
-        this.replyButtons = output.getReplyButtons();
-        this.inlineButtons = output.getInlineButtons();
-        this.picture = output.getPicture();
-        this.chatID = chatID;
+    public Output(State state, boolean redirect, String message) {
+        this.state = state;
+        this.redirect = redirect;
+        this.message = message;
+    }
+
+    public Output(State state, ResponseType type, String message, List<String> replyButtons) {
+        this.state = state;
+        this.type = type;
+        this.message = message;
+        this.replyButtons = replyButtons;
     }
 
     public ResponseType getType() {
@@ -76,14 +81,6 @@ public class OutputMessage {
         this.picture = picture;
     }
 
-    public Long getChatID() {
-        return chatID;
-    }
-
-    public void setChatID(Long chatID) {
-        this.chatID = chatID;
-    }
-
     public List<String> getInlineButtons() {
         return inlineButtons;
     }
@@ -92,15 +89,31 @@ public class OutputMessage {
         this.inlineButtons = inlineButtons;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public boolean isRedirect() {
+        return redirect;
+    }
+
+    public void setRedirect(boolean redirect) {
+        this.redirect = redirect;
+    }
+
     @Override
     public String toString() {
-        return "OutputMessage{" +
+        return "Output{" +
                 "type=" + type +
                 ", message='" + message + '\'' +
                 ", replyButtons=" + replyButtons +
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
-                ", chatID=" + chatID +
+                ", state=" + state +
                 '}';
     }
 }

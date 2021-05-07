@@ -2,9 +2,12 @@ package com.andriynev.driver_helper_bot.services;
 
 
 import com.andriynev.driver_helper_bot.dto.InputMessage;
+import com.andriynev.driver_helper_bot.dto.Output;
+import com.andriynev.driver_helper_bot.dto.OutputMessage;
 import com.andriynev.driver_helper_bot.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -31,8 +34,18 @@ public class DispatcherService {
             inputMessage = getDirectMessage(update.getMessage());
         }
         User user = identifyUser(update.getMessage().getChatId());
+        Output out = routerService.route(user, inputMessage);
+        user.setState(out.getState());
+        user = userService.save(user);
+        OutputMessage mess = new OutputMessage(out, user.getChatID());
 
-        return responseService.sendMassage(routerService.route(user, inputMessage));
+        if (!out.isRedirect()) {
+            return responseService.sendMessage(mess);
+        }
+
+        Output outSecondary = routerService.route(user, new InputMessage());
+        OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID());
+        return responseService.sendMessages(mess, messSecondary);
 
     }
 
@@ -50,5 +63,9 @@ public class DispatcherService {
 
     private boolean hasCallBack(Update update) {
         return update.hasCallbackQuery();
+    }
+
+    public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
+        return responseService.onWebhookUpdateReceived(update);
     }
 }

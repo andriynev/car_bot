@@ -29,4 +29,12 @@ public class State {
     public void setStep(String step) {
         this.step = step;
     }
+
+    @Override
+    public String toString() {
+        return "State{" +
+                "type='" + type + '\'' +
+                ", step='" + step + '\'' +
+                '}';
+    }
 }

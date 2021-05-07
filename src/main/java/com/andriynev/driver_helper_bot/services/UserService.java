@@ -30,6 +30,10 @@ public class UserService {
         return userRepository.save(new User(chatID, initialState, new ArrayList<>()));
     }
 
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
         System.out.println("UserService is running........");

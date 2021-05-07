@@ -11,6 +11,10 @@ public class InputMessage {
         this.chatID = chatID;
     }
 
+    public InputMessage() {
+
+    }
+
     public String getType() {
         return type;
     }

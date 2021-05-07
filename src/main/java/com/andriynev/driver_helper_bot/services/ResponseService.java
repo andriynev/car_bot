@@ -2,9 +2,13 @@ package com.andriynev.driver_helper_bot.services;
 
 import com.andriynev.driver_helper_bot.dto.OutputMessage;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -18,11 +22,13 @@ import java.util.List;
 public class ResponseService {
     DriverHelperBot driverHelperBot;
 
+    @Lazy
+    @Autowired
     public ResponseService(DriverHelperBot driverHelperBot) {
         this.driverHelperBot = driverHelperBot;
     }
 
-    public BotApiMethod<?> sendMassage(OutputMessage outputMessage) {
+    public BotApiMethod<?> sendMessage(OutputMessage outputMessage) {
 
         BotApiMethod<?> replyToUser = null;
 
@@ -38,6 +44,17 @@ public class ResponseService {
                 break;
         }
         return replyToUser;
+    }
+
+    public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg) {
+        sendFinalMessage(finalMsg);
+
+        sendMenu(secondaryMsg);
+        return sendMessageForm(secondaryMsg);
+    }
+
+    public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
+        return driverHelperBot.onWebhookUpdateReceived(update);
     }
 
 
@@ -60,6 +77,12 @@ public class ResponseService {
         SendMessage sendMessage = initMessage(outputMessage.getChatID(), "");
         ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
+
+        driverHelperBot.sendMessage(sendMessage);
+    }
+
+    private void sendFinalMessage(OutputMessage outputMessage) {
+        SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
 
         driverHelperBot.sendMessage(sendMessage);
     }

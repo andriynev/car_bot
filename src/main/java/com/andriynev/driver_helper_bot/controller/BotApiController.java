@@ -1,6 +1,7 @@
 package com.andriynev.driver_helper_bot.controller;
 
-import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
+import com.andriynev.driver_helper_bot.services.DispatcherService;
+import com.andriynev.driver_helper_bot.services.ResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -8,15 +9,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RestController
 public class BotApiController {
-    private final DriverHelperBot telegramBot;
+    private final DispatcherService dispatcherService;
 
     @Autowired
-    public BotApiController(DriverHelperBot telegramBot) {
-        this.telegramBot = telegramBot;
+    public BotApiController(DispatcherService dispatcherService) {
+        this.dispatcherService = dispatcherService;
     }
 
     @PostMapping("/")
     public BotApiMethod<?> onUpdateReceived(@RequestBody Update update) {
-        return telegramBot.onWebhookUpdateReceived(update);
+        return dispatcherService.onWebhookUpdateReceived(update);
     }
 }
