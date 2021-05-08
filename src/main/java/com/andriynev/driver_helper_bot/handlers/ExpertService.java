@@ -12,11 +12,10 @@ import java.util.Optional;
 @Service
 public class ExpertService implements Handler {
 
-    private CarRepairTreeRepository carRepairTreeRepository;
-    private static int maxDepth = 50;
-    private static String defaultMessage = "Take your car to a mechanic";
-    private static String initialStep = "initial";
-    private static String finalStep = "final";
+    private final CarRepairTreeRepository carRepairTreeRepository;
+    private static final int maxDepth = 50;
+    private static final String defaultMessage = "Take your car to a mechanic";
+    private static final String initialStep = "initial";
 
     @Autowired
     public ExpertService(CarRepairTreeRepository carRepairTreeRepository) {

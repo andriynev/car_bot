@@ -37,7 +37,6 @@ public class ResponseService {
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case QUESTION:
-                sendMenu(outputMessage);
                 replyToUser = sendMessageForm(outputMessage);
 
                 break;
@@ -47,10 +46,13 @@ public class ResponseService {
         return replyToUser;
     }
 
-    public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg) {
-        sendFinalMessage(finalMsg);
+    public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg, boolean isNeedToChangeMenu) {
+        if (!isNeedToChangeMenu) {
+            sendFinalMessage(finalMsg);
+        } else {
+            sendMenu(finalMsg);
+        }
 
-        sendMenu(secondaryMsg);
         return sendMessageForm(secondaryMsg);
     }
 
@@ -75,7 +77,7 @@ public class ResponseService {
     }
 
     private void sendMenu(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(outputMessage.getChatID(), ".");
+        SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
 
         ArrayList<String> button = new ArrayList<>();
         button.add("Main menu");

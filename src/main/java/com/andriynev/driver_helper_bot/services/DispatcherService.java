@@ -1,10 +1,7 @@
 package com.andriynev.driver_helper_bot.services;
 
 
-import com.andriynev.driver_helper_bot.dto.InputMessage;
-import com.andriynev.driver_helper_bot.dto.Output;
-import com.andriynev.driver_helper_bot.dto.OutputMessage;
-import com.andriynev.driver_helper_bot.dto.User;
+import com.andriynev.driver_helper_bot.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
 public class DispatcherService {
-    private UserService userService;
-    private RouterService routerService;
-    private ResponseService responseService;
+    private final UserService userService;
+    private final RouterService routerService;
+    private final ResponseService responseService;
 
     @Autowired
     public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService) {
@@ -33,19 +30,24 @@ public class DispatcherService {
         } else {
             inputMessage = getDirectMessage(update.getMessage());
         }
+
         User user = identifyUser(inputMessage.getChatID());
+        State previousState = user.getState();
         Output out = routerService.route(user, inputMessage);
         user.setState(out.getState());
         user = userService.save(user);
+
         OutputMessage mess = new OutputMessage(out, user.getChatID());
 
         if (!out.isRedirect()) {
             return responseService.sendMessage(mess);
         }
 
+        State currentState = user.getState();
+        boolean isNeedToChangeMenu = !currentState.getType().equals(previousState.getType());
         Output outSecondary = routerService.route(user, new InputMessage());
         OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID());
-        return responseService.sendMessages(mess, messSecondary);
+        return responseService.sendMessages(mess, messSecondary, isNeedToChangeMenu);
 
     }
 
