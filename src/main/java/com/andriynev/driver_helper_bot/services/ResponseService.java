@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -41,12 +42,11 @@ public class ResponseService {
 
         switch (outputMessage.getType()) {
             case MENU:
-                replyToUser = sendMessageForm(outputMessage);
-                break;
             case QUESTION:
                 replyToUser = sendMessageForm(outputMessage);
-
                 break;
+            case CALLBACK_ANSWER:
+                replyToUser = sendAnswerCallbackQuery(outputMessage);
             default:
                 break;
         }
@@ -117,6 +117,14 @@ public class ResponseService {
         }
 
         return sendMessage;
+    }
+
+    private AnswerCallbackQuery sendAnswerCallbackQuery(OutputMessage outputMessage) {
+        return AnswerCallbackQuery.builder()
+                .callbackQueryId(outputMessage.getCallbackQueryId())
+                .text(outputMessage.getMessage())
+                .showAlert(true)
+                .build();
     }
 
     private void sendMenu(OutputMessage outputMessage) {

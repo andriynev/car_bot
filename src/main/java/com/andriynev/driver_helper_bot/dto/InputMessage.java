@@ -1,23 +1,37 @@
 package com.andriynev.driver_helper_bot.dto;
 
-public class InputMessage {
-    private String type;
-    private String message;
-    private Long chatID;
+import com.andriynev.driver_helper_bot.enums.InputMessageType;
 
-    public InputMessage(String type, String message, Long chatID) {
+public class InputMessage {
+    private final InputMessageType type;
+    private final String message;
+    private final Long chatID;
+
+    // only for callback messages
+    private final String callbackId;
+
+    public InputMessage(InputMessageType type, String message, Long chatID) {
         this.type = type;
         this.message = message;
         this.chatID = chatID;
+        this.callbackId = "";
+    }
+
+    public InputMessage(InputMessageType type, String message, Long chatID, String callbackId) {
+        this.type = type;
+        this.message = message;
+        this.chatID = chatID;
+        this.callbackId = callbackId;
     }
 
     public InputMessage() {
-        type = "direct";
+        type = InputMessageType.DIRECT;
         message = "";
         chatID = 0L;
+        this.callbackId = "";
     }
 
-    public String getType() {
+    public InputMessageType getType() {
         return type;
     }
 
@@ -27,5 +41,9 @@ public class InputMessage {
 
     public Long getChatID() {
         return chatID;
+    }
+
+    public String getCallbackId() {
+        return callbackId;
     }
 }

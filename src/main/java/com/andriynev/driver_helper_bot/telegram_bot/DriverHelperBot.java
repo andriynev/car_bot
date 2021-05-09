@@ -40,6 +40,10 @@ public class DriverHelperBot extends TelegramWebhookBot {
     private boolean isValidWebHookUpdate(Update update) {
         if (update.hasCallbackQuery()) {
             // validate callback params
+            if (update.getCallbackQuery().getId() == null) {
+                return false;
+            }
+
             if (update.getCallbackQuery().getMessage() == null) {
                 return false;
             }

@@ -2,6 +2,7 @@ package com.andriynev.driver_helper_bot.services;
 
 
 import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.InputMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -40,7 +41,13 @@ public class DispatcherService {
         user.setState(out.getState());
         user = userService.save(user);
 
-        OutputMessage mess = new OutputMessage(out, user.getChatID());
+        OutputMessage mess;
+        if (inputMessage.getType().equals(InputMessageType.DIRECT)) {
+            mess = new OutputMessage(out, user.getChatID());
+        } else {
+            mess = new OutputMessage(out, user.getChatID(), inputMessage.getCallbackId());
+        }
+
 
         if (!out.isRedirect()) {
             return responseService.sendMessage(mess);
@@ -55,12 +62,16 @@ public class DispatcherService {
     }
 
     private InputMessage getCallBackMessage(CallbackQuery callbackQuery) {
-        return new InputMessage("callback", callbackQuery.getData(), callbackQuery.getMessage().getChatId());
+        return new InputMessage(
+                InputMessageType.CALLBACK,
+                callbackQuery.getData(),
+                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getId());
     }
 
     private InputMessage getDirectMessage(Message message) {
         return new InputMessage(
-                "direct",
+                InputMessageType.DIRECT,
                 message.getText(),
                 message.getChatId()
         );

@@ -12,28 +12,8 @@ public class OutputMessage {
     private String picture;
     private Long chatID;
 
-    public OutputMessage(ResponseType type, String message, List<String> replyButtons, String picture, Long chatID) {
-        this.type = type;
-        this.message = message;
-        this.replyButtons = replyButtons;
-        this.picture = picture;
-        this.chatID = chatID;
-    }
-
-    public OutputMessage(ResponseType type, String message, List<String> replyButtons, List<String> inlineButtons, String picture, Long chatID) {
-        this.type = type;
-        this.message = message;
-        this.replyButtons = replyButtons;
-        this.inlineButtons = inlineButtons;
-        this.picture = picture;
-        this.chatID = chatID;
-    }
-
-    public OutputMessage(ResponseType type, String message, Long chatID) {
-        this.type = type;
-        this.message = message;
-        this.chatID = chatID;
-    }
+    // only for callback messages
+    private String callbackQueryId;
 
     public OutputMessage(Output output, Long chatID) {
         this.type = output.getType();
@@ -42,6 +22,16 @@ public class OutputMessage {
         this.inlineButtons = output.getInlineButtons();
         this.picture = output.getPicture();
         this.chatID = chatID;
+    }
+
+    public OutputMessage(Output output, Long chatID, String callbackQueryId) {
+        this.type = output.getType();
+        this.message = output.getMessage();
+        this.replyButtons = output.getReplyButtons();
+        this.inlineButtons = output.getInlineButtons();
+        this.picture = output.getPicture();
+        this.chatID = chatID;
+        this.callbackQueryId = callbackQueryId;
     }
 
     public ResponseType getType() {
@@ -92,6 +82,14 @@ public class OutputMessage {
         this.inlineButtons = inlineButtons;
     }
 
+    public String getCallbackQueryId() {
+        return callbackQueryId;
+    }
+
+    public void setCallbackQueryId(String callbackQueryId) {
+        this.callbackQueryId = callbackQueryId;
+    }
+
     @Override
     public String toString() {
         return "OutputMessage{" +
@@ -101,6 +99,7 @@ public class OutputMessage {
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
                 ", chatID=" + chatID +
+                ", callbackQueryId='" + callbackQueryId + '\'' +
                 '}';
     }
 }
