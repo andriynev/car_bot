@@ -13,23 +13,18 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.List;
-import java.util.Map;
-
 
 @Service
 public class DispatcherService {
     private final UserService userService;
     private final RouterService routerService;
     private final ResponseService responseService;
-    private final NewsService newsService;
 
     @Autowired
     public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService, NewsService newsService) {
         this.userService = userService;
         this.routerService = routerService;
         this.responseService = responseService;
-        this.newsService = newsService;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {

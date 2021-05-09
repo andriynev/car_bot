@@ -30,38 +30,9 @@ public class NewsService {
         this.responseService = responseService;
     }
 
-    public Map<String, List<NewsItem>> processRSSFeeds() {
-        Map<String, SyndFeed> feedsUpdates = rssNewsReader.fetchNewsChanges();
-        Map<String, List<NewsItem>> news = new HashMap<>();
-        for (Map.Entry<String, SyndFeed> entry : feedsUpdates.entrySet()) {
-            List<NewsItem> feedNews = getNewsItemFromRssFeed(entry.getValue());
-            news.put(entry.getKey(), feedNews);
-        }
-        return news;
-    }
-
-    private List<NewsItem> getNewsItemFromRssFeed(SyndFeed feed) {
-        List<NewsItem> news = new ArrayList<>();
-        for (Object entry: feed.getEntries()) {
-            if (entry instanceof SyndEntryImpl) {
-                NewsItem item = parseFeedEntry((SyndEntryImpl) entry);
-                news.add(item);
-            }
-        }
-        return news;
-    }
-
-    private NewsItem parseFeedEntry(SyndEntryImpl feedEntry) {
-        Document doc = Jsoup.parse(feedEntry.getDescription().getValue());
-        String photoUrl = doc.select("div > img").attr("src");
-        String text = doc.select("p").first().text();
-        NewsItem item = new NewsItem(feedEntry.getTitle(), text, photoUrl, feedEntry.getLink());
-        return item;
-    }
-
     @Scheduled(fixedRate = 600000)
     public void checkNewsUpdates() {
-        Map<String, List<NewsItem>> news = processRSSFeeds();
+        Map<String, List<NewsItem>> news = rssNewsReader.processRSSFeeds();
         if (news.isEmpty()) {
             return;
         }
