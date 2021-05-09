@@ -27,7 +27,7 @@ public class ResponseService {
     private final String detailsUkr = "Деталі";
     private final String markdownV2MessageType = "MarkdownV2";
     DriverHelperBot driverHelperBot;
-    private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([\\.+\\-!=>()#]{1,1})");
+    private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([.+\\-!=>()#_*\\[\\]~`|{}]{1,1})");
 
     @Lazy
     @Autowired

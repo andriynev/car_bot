@@ -5,8 +5,6 @@ import com.andriynev.driver_helper_bot.dto.Output;
 import com.andriynev.driver_helper_bot.dto.State;
 import com.andriynev.driver_helper_bot.dto.User;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
-import com.andriynev.driver_helper_bot.services.ResponseService;
-import com.andriynev.driver_helper_bot.services.RouterService;
 import com.andriynev.driver_helper_bot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

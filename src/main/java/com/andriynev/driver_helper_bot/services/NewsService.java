@@ -1,17 +1,8 @@
 package com.andriynev.driver_helper_bot.services;
 
-import com.andriynev.driver_helper_bot.dao.UserRepository;
-import com.andriynev.driver_helper_bot.dto.CarRepairTree;
 import com.andriynev.driver_helper_bot.dto.NewsItem;
-import com.andriynev.driver_helper_bot.dto.State;
 import com.andriynev.driver_helper_bot.dto.User;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

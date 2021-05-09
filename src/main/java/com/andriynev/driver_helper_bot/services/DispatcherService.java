@@ -2,7 +2,6 @@ package com.andriynev.driver_helper_bot.services;
 
 
 import com.andriynev.driver_helper_bot.dto.*;
-import com.sun.syndication.feed.synd.SyndFeed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

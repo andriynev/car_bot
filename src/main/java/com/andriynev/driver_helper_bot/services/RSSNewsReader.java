@@ -1,7 +1,6 @@
 package com.andriynev.driver_helper_bot.services;
 
 import com.andriynev.driver_helper_bot.dao.RSSNewsSourceRepository;
-import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.NewsItem;
 import com.andriynev.driver_helper_bot.dto.RSSNewsSource;
 import com.rometools.rome.io.XmlReader;
