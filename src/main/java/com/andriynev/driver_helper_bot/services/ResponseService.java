@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.services;
 
+import com.andriynev.driver_helper_bot.dto.NewsItem;
 import com.andriynev.driver_helper_bot.dto.OutputMessage;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -17,10 +20,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class ResponseService {
+    private final String detailsUkr = "Деталі";
+    private final String markdownV2MessageType = "MarkdownV2";
     DriverHelperBot driverHelperBot;
+    private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([\\.+\\-!=>()#]{1,1})");
 
     @Lazy
     @Autowired
@@ -58,6 +65,42 @@ public class ResponseService {
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
         return driverHelperBot.onWebhookUpdateReceived(update);
+    }
+
+    public void sendRawMessage(SendMessage sendMessage) {
+        driverHelperBot.sendMessage(sendMessage);
+    }
+
+    public void sendNewsItem(NewsItem item, Long chatID) {
+        SendPhoto sendPhoto = prepareNewsItem(item, chatID);
+        driverHelperBot.sendPhoto(sendPhoto);
+    }
+
+    private SendPhoto prepareNewsItem(NewsItem item, Long chatID) {
+        String title = telegramMarkdownForbiddenSymbolsPattern
+                .matcher(item.getTitle())
+                .replaceAll("\\\\$1");
+
+        String text = telegramMarkdownForbiddenSymbolsPattern
+                .matcher(item.getText())
+                .replaceAll("\\\\$1");
+
+        String caption = String.format("* %s *\n" + // bold title
+                "\n" + // new line to separate title and text
+                "%s\n" + // main text
+                "\n" + // new line to separate text and link
+                "\uD83D\uDC49 [%s](%s)",
+                title,
+                text,
+                detailsUkr, item.getOriginLink());
+
+        SendPhoto sendPhoto = SendPhoto.builder()
+                .chatId(chatID.toString())
+                .photo(new InputFile(item.getPhotoUrl()))
+                .caption(caption)
+                .build();
+        sendPhoto.setParseMode(markdownV2MessageType);
+        return sendPhoto;
     }
 
 

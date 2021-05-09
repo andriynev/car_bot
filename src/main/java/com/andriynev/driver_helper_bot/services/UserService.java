@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +28,11 @@ public class UserService {
             return user.get();
         }
 
-        return userRepository.save(new User(chatID, initialState, new ArrayList<>()));
+        return userRepository.save(new User(chatID, initialState, User.allSubscriptions));
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
     public User save(User user) {
@@ -37,29 +42,19 @@ public class UserService {
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
         System.out.println("UserService is running........");
-        //userRepository.deleteAll();
 
         // save a couple of customers
-        //userRepository.save(new User(12346L, new State("main_menu", "initial"), new ArrayList<>()));
-        //userRepository.save(new User(12345L, new State("main_menu", "initial"), new ArrayList<>()));
 
         // fetch all customers
         System.out.println("Customers found with findAll():");
         System.out.println("-------------------------------");
         for (User user : userRepository.findAll()) {
             System.out.println(user);
+            if (user.getSubscriptions().size() == 0) {
+                user.setSubscriptions(User.allSubscriptions);
+                userRepository.save(user);
+            }
         }
         System.out.println();
-
-        // fetch an individual customer
-        System.out.println("Customer found with findUserByChatID(12345L):");
-        System.out.println("--------------------------------");
-        System.out.println(userRepository.findUserByChatID(12345L));
-
-        System.out.println("Customers found with findAll:");
-        System.out.println("--------------------------------");
-        for (User customer : userRepository.findAll()) {
-            System.out.println(customer);
-        }
     }
 }

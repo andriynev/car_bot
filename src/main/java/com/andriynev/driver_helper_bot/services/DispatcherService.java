@@ -2,7 +2,10 @@ package com.andriynev.driver_helper_bot.services;
 
 
 import com.andriynev.driver_helper_bot.dto.*;
+import com.sun.syndication.feed.synd.SyndFeed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -10,17 +13,23 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
+import java.util.Map;
+
+
 @Service
 public class DispatcherService {
     private final UserService userService;
     private final RouterService routerService;
     private final ResponseService responseService;
+    private final NewsService newsService;
 
     @Autowired
-    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService) {
+    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService, NewsService newsService) {
         this.userService = userService;
         this.routerService = routerService;
         this.responseService = responseService;
+        this.newsService = newsService;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
@@ -73,5 +82,11 @@ public class DispatcherService {
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
         return responseService.onWebhookUpdateReceived(update);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void runAfterStartup() {
+        System.out.println("DispatcherService is running........");
+
     }
 }

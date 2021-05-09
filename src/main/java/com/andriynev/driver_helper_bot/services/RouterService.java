@@ -5,6 +5,7 @@ import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.handlers.GroupHandler;
 import com.andriynev.driver_helper_bot.handlers.Handler;
+import com.andriynev.driver_helper_bot.handlers.SubscriptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -16,11 +17,12 @@ public class RouterService {
     private final Map<String, Handler> handlers = new HashMap<>();
 
     @Autowired
-    public RouterService(Handler expertService, GroupHandler mainMenuService, Handler stoService) {
+    public RouterService(Handler expertService, Handler stoService, Handler subscriptionsService, GroupHandler mainMenuService) {
         handlers.put(expertService.getType(), expertService);
         handlers.put(stoService.getType(), stoService);
+        handlers.put(subscriptionsService.getType(), subscriptionsService);
 
-        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, stoService));
+        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, stoService, subscriptionsService));
         mainMenuService.setHandlers(group);
         handlers.put(mainMenuService.getType(), mainMenuService);
 

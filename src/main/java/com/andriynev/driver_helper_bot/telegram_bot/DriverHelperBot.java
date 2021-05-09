@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -92,6 +93,15 @@ public class DriverHelperBot extends TelegramWebhookBot {
     }
 
     public void sendMessage(SendMessage message) {
+        try {
+            execute(message);
+
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendPhoto(SendPhoto message) {
         try {
             execute(message);
 

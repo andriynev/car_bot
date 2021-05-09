@@ -3,9 +3,13 @@ package com.andriynev.driver_helper_bot.dto;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class User {
+    public static final List<String> allSubscriptions = new ArrayList<>(Arrays.asList("news", "laws", "articles", "service"));
+
     @NotNull
     @Id
     private String id;
@@ -13,22 +17,22 @@ public class User {
     private Long chatID;
     @NotNull
     private State state;
-    private List<String> subscription;
+    private List<String> subscriptions;
 
     public User() {
     }
 
-    public User(String id, Long chatID, State state, List<String> subscription) {
+    public User(String id, Long chatID, State state, List<String> subscriptions) {
         this.id = id;
         this.chatID = chatID;
         this.state = state;
-        this.subscription = subscription;
+        this.subscriptions = subscriptions;
     }
 
-    public User(Long chatID, State state, List<String> subscription) {
+    public User(Long chatID, State state, List<String> subscriptions) {
         this.chatID = chatID;
         this.state = state;
-        this.subscription = subscription;
+        this.subscriptions = subscriptions;
     }
 
     public String getId() {
@@ -55,18 +59,24 @@ public class User {
         this.state = state;
     }
 
-    public List<String> getSubscription() {
-        return subscription;
+    public List<String> getSubscriptions() {
+        if (subscriptions == null) {
+            return new ArrayList<>();
+        }
+        return subscriptions;
     }
 
-    public void setSubscription(List<String> subscription) {
-        this.subscription = subscription;
+    public void setSubscriptions(List<String> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "User[id=%s, chatID='%d', state={type='%s', step='%s'}]",
-                id, chatID, state.getType(), state.getStep());
+        return "User{" +
+                "id='" + id + '\'' +
+                ", chatID=" + chatID +
+                ", state=" + state +
+                ", subscriptions=" + subscriptions +
+                '}';
     }
 }
