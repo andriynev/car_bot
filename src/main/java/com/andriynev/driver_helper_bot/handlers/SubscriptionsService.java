@@ -34,8 +34,7 @@ public class SubscriptionsService implements Handler {
                         new State(type, viewMenuStep),
                         ResponseType.QUESTION,
                         "Your subscriptions",
-                        buttons,
-                        null
+                        buttons
                 );
             case viewMenuStep:
 
@@ -51,8 +50,7 @@ public class SubscriptionsService implements Handler {
                 new State(type, viewMenuStep),
                 ResponseType.QUESTION,
                 "Your subscriptions",
-                buttons,
-                null
+                buttons
         );
     }
 
