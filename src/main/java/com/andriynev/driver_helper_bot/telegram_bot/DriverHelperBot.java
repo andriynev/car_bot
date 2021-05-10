@@ -47,10 +47,6 @@ public class DriverHelperBot extends TelegramWebhookBot {
                 return false;
             }
 
-            if (update.getCallbackQuery().getInlineMessageId() == null) {
-                return false;
-            }
-
             if (update.getCallbackQuery().getMessage() == null) {
                 return false;
             }
@@ -84,6 +80,7 @@ public class DriverHelperBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        System.out.println(update);
         if (!isValidWebHookUpdate(update)) {
             return null;
         }
