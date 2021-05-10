@@ -87,7 +87,7 @@ public class DriverHelperBot extends TelegramWebhookBot {
             return false;
         }
 
-        if (!update.getMessage().hasText() || !update.getMessage().hasLocation()) {
+        if (!update.getMessage().hasText() && !update.getMessage().hasLocation()) {
             return false;
         }
 
