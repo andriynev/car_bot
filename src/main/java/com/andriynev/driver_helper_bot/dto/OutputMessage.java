@@ -8,7 +8,7 @@ public class OutputMessage {
     private ResponseType type;
     private String message;
     private List<String> replyButtons;
-    private List<String> inlineButtons;
+    private List<InlineButton> inlineButtons;
     private String picture;
     private Long chatID;
 
@@ -74,11 +74,11 @@ public class OutputMessage {
         this.chatID = chatID;
     }
 
-    public List<String> getInlineButtons() {
+    public List<InlineButton> getInlineButtons() {
         return inlineButtons;
     }
 
-    public void setInlineButtons(List<String> inlineButtons) {
+    public void setInlineButtons(List<InlineButton> inlineButtons) {
         this.inlineButtons = inlineButtons;
     }
 

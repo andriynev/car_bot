@@ -37,6 +37,12 @@ public class RouterService {
             case "Main menu":
                 newState = UserService.initialState;
                 break;
+            case "/state":
+                return new Output(
+                        user.getState(),
+                        ResponseType.QUESTION,
+                        user.getState().toString()
+                );
 
             default:
                 newState = user.getState();

@@ -6,6 +6,8 @@ import com.andriynev.driver_helper_bot.enums.ResponseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,11 +61,15 @@ public class ExpertService implements Handler {
         }
 
         if (!subTree.get().getOutcomes().containsKey(userInput.getMessage())) {
+            List<InlineButton> buttons = new ArrayList<>();
+            for (String answer: subTree.get().getAnswers()) {
+                buttons.add(new InlineButton(answer));
+            }
             return new Output(
                     new State(type, subTree.get().getStep()),
                     ResponseType.QUESTION,
                     subTree.get().getQuestion(),
-                    subTree.get().getAnswers()
+                    buttons
             );
         }
 
@@ -74,11 +80,15 @@ public class ExpertService implements Handler {
             return out;
         }
 
+        List<InlineButton> buttons = new ArrayList<>();
+        for (String answer: selectedSubTree.getAnswers()) {
+            buttons.add(new InlineButton(answer));
+        }
         return new Output(
                 new State(type, selectedSubTree.getStep()),
                 ResponseType.QUESTION,
                 selectedSubTree.getQuestion(),
-                selectedSubTree.getAnswers()
+                buttons
         );
     }
 

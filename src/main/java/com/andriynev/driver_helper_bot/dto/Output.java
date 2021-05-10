@@ -8,7 +8,7 @@ public class Output {
     private ResponseType type;
     private String message;
     private List<String> replyButtons;
-    private List<String> inlineButtons;
+    private List<InlineButton> inlineButtons;
     private String picture;
     private State state;
     private boolean redirect;
@@ -21,28 +21,13 @@ public class Output {
         this.picture = picture;
     }
 
-    public Output(State state, ResponseType type, String message, List<String> replyButtons, List<String> inlineButtons, String picture) {
-        this.state = state;
-        this.type = type;
-        this.message = message;
-        this.replyButtons = replyButtons;
-        this.inlineButtons = inlineButtons;
-        this.picture = picture;
-    }
-
     public Output(State state, ResponseType type, String message) {
         this.state = state;
         this.type = type;
         this.message = message;
     }
 
-    public Output(State state, boolean redirect, String message) {
-        this.state = state;
-        this.redirect = redirect;
-        this.message = message;
-    }
-
-    public Output(State state, ResponseType type, String message, List<String> inlineButtons) {
+    public Output(State state, ResponseType type, String message, List<InlineButton> inlineButtons) {
         this.state = state;
         this.type = type;
         this.message = message;
@@ -81,11 +66,11 @@ public class Output {
         this.picture = picture;
     }
 
-    public List<String> getInlineButtons() {
+    public List<InlineButton> getInlineButtons() {
         return inlineButtons;
     }
 
-    public void setInlineButtons(List<String> inlineButtons) {
+    public void setInlineButtons(List<InlineButton> inlineButtons) {
         this.inlineButtons = inlineButtons;
     }
 

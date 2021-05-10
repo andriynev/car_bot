@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.services;
 
+import com.andriynev.driver_helper_bot.dto.InlineButton;
 import com.andriynev.driver_helper_bot.dto.NewsItem;
 import com.andriynev.driver_helper_bot.dto.OutputMessage;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
@@ -164,21 +165,21 @@ public class ResponseService {
         return replyKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup getInlineKeyboard(List<String> inlineButtons) {
+    private InlineKeyboardMarkup getInlineKeyboard(List<InlineButton> inlineButtons) {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
 
-        for (String button : inlineButtons) {
+        for (InlineButton button : inlineButtons) {
 
             if (inlineButtons.indexOf(button) % 2 == 0 && !keyboardRow.isEmpty()) {
                 keyboard.add(keyboardRow);
                 keyboardRow = new ArrayList<>();
             }
             InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-            inlineKeyboardButton.setText(button);
-            inlineKeyboardButton.setCallbackData(button);
+            inlineKeyboardButton.setText(button.getTitle());
+            inlineKeyboardButton.setCallbackData(button.getData());
             keyboardRow.add(inlineKeyboardButton);
         }
         if (!keyboardRow.isEmpty()) {
