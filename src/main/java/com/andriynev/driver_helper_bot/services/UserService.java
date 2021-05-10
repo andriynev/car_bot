@@ -28,15 +28,18 @@ public class UserService {
         if (user.isPresent()) {
             User u = user.get();
             boolean changed = false;
-            if (u.getFirstName().isEmpty() && !firstName.isEmpty()) {
+            if ((u.getFirstName().isEmpty())
+                    && !firstName.isEmpty()) {
                 u.setFirstName(firstName);
                 changed = true;
             }
-            if (u.getUserName().isEmpty() && !lastName.isEmpty()) {
+            if ((u.getLastName().isEmpty())
+                    && !lastName.isEmpty()) {
                 u.setLastName(lastName);
                 changed = true;
             }
-            if (u.getUserName().isEmpty() && !userName.isEmpty()) {
+            if ((u.getUserName().isEmpty())
+                    && !userName.isEmpty()) {
                 u.setUserName(userName);
                 changed = true;
             }

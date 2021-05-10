@@ -18,20 +18,29 @@ public class FromUser {
     }
 
     public FromUser(String firstName, String lastName, String userName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
+        this.firstName = firstName != null ? firstName : "";
+        this.lastName = lastName != null ? lastName : "";
+        this.userName = userName != null ? userName : "";
     }
 
     public String getFirstName() {
+        if (firstName == null) {
+            return "";
+        }
         return firstName;
     }
 
     public String getLastName() {
+        if (lastName == null) {
+            return "";
+        }
         return lastName;
     }
 
     public String getUserName() {
+        if (userName == null) {
+            return "";
+        }
         return userName;
     }
 

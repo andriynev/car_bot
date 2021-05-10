@@ -71,6 +71,9 @@ public class User {
     }
 
     public String getFirstName() {
+        if (firstName == null) {
+            return "";
+        }
         return firstName;
     }
 
@@ -79,6 +82,9 @@ public class User {
     }
 
     public String getLastName() {
+        if (lastName == null) {
+            return "";
+        }
         return lastName;
     }
 
@@ -87,6 +93,9 @@ public class User {
     }
 
     public String getUserName() {
+        if (userName == null) {
+            return "";
+        }
         return userName;
     }
 
