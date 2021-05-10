@@ -35,7 +35,7 @@ public class DispatcherService {
             inputMessage = getDirectMessage(update.getMessage());
         }
 
-        User user = identifyUser(inputMessage.getChatID());
+        User user = identifyUser(inputMessage);
         State previousState = user.getState();
         Output out = routerService.route(user, inputMessage);
         user.setState(out.getState());
@@ -73,8 +73,9 @@ public class DispatcherService {
                 InputMessageType.CALLBACK,
                 callbackQuery.getData(),
                 callbackQuery.getMessage().getChatId(),
-                callbackQuery.getId(),
-                callbackQuery.getMessage().getMessageId()
+                callbackQuery.getMessage().getMessageId(),
+                new FromUser(callbackQuery.getFrom().getFirstName(), callbackQuery.getFrom().getLastName(), callbackQuery.getFrom().getUserName()),
+                callbackQuery.getId()
         );
     }
 
@@ -82,12 +83,19 @@ public class DispatcherService {
         return new InputMessage(
                 InputMessageType.DIRECT,
                 message.getText(),
-                message.getChatId()
+                message.getChatId(),
+                message.getMessageId(),
+                new FromUser(message.getFrom().getFirstName(), message.getFrom().getLastName(), message.getFrom().getUserName())
         );
     }
 
-    private User identifyUser(Long chatID) {
-        return userService.getOrCreateUser(chatID);
+    private User identifyUser(InputMessage inputMessage) {
+        return userService.getOrCreateUser(
+                inputMessage.getChatID(),
+                inputMessage.getFromUser().getFirstName(),
+                inputMessage.getFromUser().getLastName(),
+                inputMessage.getFromUser().getUserName()
+        );
     }
 
     private boolean hasCallBack(Update update) {

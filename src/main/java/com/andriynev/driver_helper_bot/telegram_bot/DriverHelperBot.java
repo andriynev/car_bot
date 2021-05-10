@@ -59,6 +59,10 @@ public class DriverHelperBot extends TelegramWebhookBot {
                 return false;
             }
 
+            if (update.getCallbackQuery().getMessage().getFrom() == null) {
+                return false;
+            }
+
             if (update.getCallbackQuery().getMessage().getChat() == null) {
                 return false;
             }
@@ -76,6 +80,10 @@ public class DriverHelperBot extends TelegramWebhookBot {
         }
 
         if (!update.getMessage().hasText()) {
+            return false;
+        }
+
+        if (update.getMessage().getFrom() == null) {
             return false;
         }
 

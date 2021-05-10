@@ -22,14 +22,32 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    public User getOrCreateUser (Long chatID) {
+    public User getOrCreateUser(Long chatID, String firstName, String lastName, String userName) {
         Optional<User> user = userRepository.findUserByChatID(chatID);
 
         if (user.isPresent()) {
-            return user.get();
+            User u = user.get();
+            boolean changed = false;
+            if (u.getFirstName().isEmpty() && !firstName.isEmpty()) {
+                u.setFirstName(firstName);
+                changed = true;
+            }
+            if (u.getUserName().isEmpty() && !lastName.isEmpty()) {
+                u.setLastName(lastName);
+                changed = true;
+            }
+            if (u.getUserName().isEmpty() && !userName.isEmpty()) {
+                u.setUserName(userName);
+                changed = true;
+            }
+            if (changed) {
+                u = userRepository.save(u);
+            }
+            return u;
         }
 
-        return userRepository.save(new User(chatID, initialState, User.allSubscriptions));
+        User u = new User(chatID, initialState, User.allSubscriptions, firstName, lastName, userName);
+        return userRepository.save(u);
     }
 
     public List<User> getUsers() {

@@ -19,20 +19,24 @@ public class User {
     private State state;
     private List<String> subscriptions;
 
-    public User() {
-    }
+    private String firstName;
+    private String lastName;
+    private String userName;
 
-    public User(String id, Long chatID, State state, List<String> subscriptions) {
-        this.id = id;
-        this.chatID = chatID;
-        this.state = state;
-        this.subscriptions = subscriptions;
+    public User() {
     }
 
     public User(Long chatID, State state, List<String> subscriptions) {
         this.chatID = chatID;
         this.state = state;
         this.subscriptions = subscriptions;
+    }
+
+    public User(Long chatID, State state, List<String> subscriptions, String firstName, String lastName, String userName) {
+        this(chatID, state, subscriptions);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
     }
 
     public String getId() {
@@ -66,6 +70,30 @@ public class User {
         return subscriptions;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public void setSubscriptions(List<String> subscriptions) {
         this.subscriptions = subscriptions;
     }
@@ -77,6 +105,9 @@ public class User {
                 ", chatID=" + chatID +
                 ", state=" + state +
                 ", subscriptions=" + subscriptions +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
                 '}';
     }
 }
