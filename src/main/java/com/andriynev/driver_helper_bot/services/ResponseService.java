@@ -55,7 +55,6 @@ public class ResponseService {
         }
 
         if (outputMessage.getEditMessageReplyMarkup() != null) {
-            System.out.println(outputMessage);
             sendEditMessage(outputMessage.getEditMessageReplyMarkup());
         }
         return replyToUser;
@@ -66,6 +65,9 @@ public class ResponseService {
             sendFinalMessage(finalMsg);
         } else {
             sendMenu(finalMsg);
+        }
+        if (finalMsg.getEditMessageReplyMarkup() != null) {
+            sendEditMessage(finalMsg.getEditMessageReplyMarkup());
         }
 
         return sendMessageForm(secondaryMsg);
@@ -146,10 +148,6 @@ public class ResponseService {
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
         driverHelperBot.sendMessage(sendMessage);
-
-        if (outputMessage.getEditMessageReplyMarkup() != null) {
-            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
-        }
     }
 
     private void sendEditMessage(OutputMessage outputMessage) {
@@ -169,10 +167,6 @@ public class ResponseService {
         SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
 
         driverHelperBot.sendMessage(sendMessage);
-
-        if (outputMessage.getEditMessageReplyMarkup() != null) {
-            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
-        }
     }
 
 
