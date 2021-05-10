@@ -49,7 +49,7 @@ public class DispatcherService {
                     out,
                     user.getChatID(),
                     inputMessage.getCallbackId(),
-                    inputMessage.getInlineMessageId()
+                    inputMessage.getMessageId()
             );
         }
 
@@ -74,7 +74,7 @@ public class DispatcherService {
                 callbackQuery.getData(),
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getId(),
-                callbackQuery.getInlineMessageId()
+                callbackQuery.getMessage().getMessageId()
         );
     }
 

@@ -149,7 +149,7 @@ public class ResponseService {
         InlineKeyboardMarkup replyKeyboardMarkup = getInlineKeyboard(outputMessage.getInlineButtons());
         EditMessageReplyMarkup msg = EditMessageReplyMarkup.builder()
                 .chatId(outputMessage.getChatID().toString())
-                .inlineMessageId(outputMessage.getInlineMessageId())
+                .messageId(outputMessage.getMessageId())
                 .replyMarkup(replyKeyboardMarkup)
                 .build();
         msg.setReplyMarkup(replyKeyboardMarkup);

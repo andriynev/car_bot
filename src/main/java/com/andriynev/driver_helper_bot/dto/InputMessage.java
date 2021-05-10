@@ -6,9 +6,7 @@ public class InputMessage {
     private final InputMessageType type;
     private final String message;
     private final Long chatID;
-
-    // only for callback messages
-    private final String inlineMessageId;
+    private final Integer messageId;
 
     // only for callback messages
     private final String callbackId;
@@ -18,15 +16,15 @@ public class InputMessage {
         this.message = message;
         this.chatID = chatID;
         this.callbackId = "";
-        this.inlineMessageId = "";
+        this.messageId = 0;
     }
 
-    public InputMessage(InputMessageType type, String message, Long chatID, String callbackId, String inlineMessageId) {
+    public InputMessage(InputMessageType type, String message, Long chatID, String callbackId, Integer inlineMessageId) {
         this.type = type;
         this.message = message;
         this.chatID = chatID;
         this.callbackId = callbackId;
-        this.inlineMessageId = inlineMessageId;
+        this.messageId = inlineMessageId;
     }
 
     public InputMessage(InputMessage inputMessage) {
@@ -34,7 +32,7 @@ public class InputMessage {
         message = "";
         chatID = inputMessage.chatID;
         this.callbackId = inputMessage.callbackId;
-        this.inlineMessageId = inputMessage.inlineMessageId;
+        this.messageId = inputMessage.messageId;
     }
 
     public InputMessage() {
@@ -42,7 +40,7 @@ public class InputMessage {
         message = "";
         chatID = 0L;
         this.callbackId = "";
-        this.inlineMessageId = "";
+        this.messageId = 0;
     }
 
     public InputMessageType getType() {
@@ -61,8 +59,8 @@ public class InputMessage {
         return callbackId;
     }
 
-    public String getInlineMessageId() {
-        return inlineMessageId;
+    public Integer getMessageId() {
+        return messageId;
     }
 
     @Override
