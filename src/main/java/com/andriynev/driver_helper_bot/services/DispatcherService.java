@@ -45,7 +45,12 @@ public class DispatcherService {
         if (inputMessage.getType().equals(InputMessageType.DIRECT)) {
             mess = new OutputMessage(out, user.getChatID());
         } else {
-            mess = new OutputMessage(out, user.getChatID(), inputMessage.getCallbackId());
+            mess = new OutputMessage(
+                    out,
+                    user.getChatID(),
+                    inputMessage.getCallbackId(),
+                    inputMessage.getInlineMessageId()
+            );
         }
 
 
@@ -68,7 +73,9 @@ public class DispatcherService {
                 InputMessageType.CALLBACK,
                 callbackQuery.getData(),
                 callbackQuery.getMessage().getChatId(),
-                callbackQuery.getId());
+                callbackQuery.getId(),
+                callbackQuery.getInlineMessageId()
+        );
     }
 
     private InputMessage getDirectMessage(Message message) {

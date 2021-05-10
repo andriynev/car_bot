@@ -14,6 +14,7 @@ public class OutputMessage {
 
     // only for callback messages
     private String callbackQueryId;
+    private String inlineMessageId;
 
     public OutputMessage(Output output, Long chatID) {
         this.type = output.getType();
@@ -24,7 +25,7 @@ public class OutputMessage {
         this.chatID = chatID;
     }
 
-    public OutputMessage(Output output, Long chatID, String callbackQueryId) {
+    public OutputMessage(Output output, Long chatID, String callbackQueryId, String inlineMessageId) {
         this.type = output.getType();
         this.message = output.getMessage();
         this.replyButtons = output.getReplyButtons();
@@ -32,6 +33,7 @@ public class OutputMessage {
         this.picture = output.getPicture();
         this.chatID = chatID;
         this.callbackQueryId = callbackQueryId;
+        this.inlineMessageId = inlineMessageId;
     }
 
     public ResponseType getType() {
@@ -90,6 +92,14 @@ public class OutputMessage {
         this.callbackQueryId = callbackQueryId;
     }
 
+    public String getInlineMessageId() {
+        return inlineMessageId;
+    }
+
+    public void setInlineMessageId(String inlineMessageId) {
+        this.inlineMessageId = inlineMessageId;
+    }
+
     @Override
     public String toString() {
         return "OutputMessage{" +
@@ -100,6 +110,7 @@ public class OutputMessage {
                 ", picture='" + picture + '\'' +
                 ", chatID=" + chatID +
                 ", callbackQueryId='" + callbackQueryId + '\'' +
+                ", inlineMessageId='" + inlineMessageId + '\'' +
                 '}';
     }
 }

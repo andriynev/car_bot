@@ -48,21 +48,24 @@ public class SubscriptionsService implements Handler {
                 if (isSubscription) {
                     newSubs.add(userInput.getMessage());
                     user.setSubscriptions(newSubs);
-
+                    buttons = generateButtons(newSubs);
                     return new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
-                            "You successfully subscribed to: " + userInput.getMessage() + " category"
+                            "You successfully subscribed to: " + userInput.getMessage() + " category",
+                            buttons
                     );
                 }
 
                 newSubs.remove(userInput.getMessage());
                 user.setSubscriptions(newSubs);
+                buttons = generateButtons(newSubs);
 
                 return new Output(
                         new State(type, viewMenuStep),
                         ResponseType.CALLBACK_ANSWER,
-                        "You successfully unsubscribed from: " + userInput.getMessage() + " category"
+                        "You successfully unsubscribed from: " + userInput.getMessage() + " category",
+                        buttons
                 );
 
         }

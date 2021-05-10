@@ -6,8 +6,11 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.Serializable;
 
 
 public class DriverHelperBot extends TelegramWebhookBot {
@@ -41,6 +44,10 @@ public class DriverHelperBot extends TelegramWebhookBot {
         if (update.hasCallbackQuery()) {
             // validate callback params
             if (update.getCallbackQuery().getId() == null) {
+                return false;
+            }
+
+            if (update.getCallbackQuery().getInlineMessageId() == null) {
                 return false;
             }
 
@@ -113,4 +120,18 @@ public class DriverHelperBot extends TelegramWebhookBot {
             e.printStackTrace();
         }
     }
+
+    public void sendMessage(EditMessageReplyMarkup message) {
+        sendTelegramMessage(message);
+    }
+
+    private void sendTelegramMessage(BotApiMethod<Serializable> message) {
+        try {
+            execute(message);
+
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

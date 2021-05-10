@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -48,6 +49,7 @@ public class ResponseService {
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case CALLBACK_ANSWER:
+                sendEditMessage(outputMessage);
                 replyToUser = sendAnswerCallbackQuery(outputMessage);
             default:
                 break;
@@ -140,6 +142,19 @@ public class ResponseService {
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
         driverHelperBot.sendMessage(sendMessage);
+    }
+
+    private void sendEditMessage(OutputMessage outputMessage) {
+
+        InlineKeyboardMarkup replyKeyboardMarkup = getInlineKeyboard(outputMessage.getInlineButtons());
+        EditMessageReplyMarkup msg = EditMessageReplyMarkup.builder()
+                .chatId(outputMessage.getChatID().toString())
+                .inlineMessageId(outputMessage.getInlineMessageId())
+                .replyMarkup(replyKeyboardMarkup)
+                .build();
+        msg.setReplyMarkup(replyKeyboardMarkup);
+
+        driverHelperBot.sendMessage(msg);
     }
 
     private void sendFinalMessage(OutputMessage outputMessage) {
