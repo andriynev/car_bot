@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class StoService implements Handler {
@@ -15,15 +16,16 @@ public class StoService implements Handler {
 
     @Override
     public Output handle(User user, State state, InputMessage userInput) {
-        switch (state.getType()){
+        switch (state.getStep()){
             case initialStep:
+                List<ReplyButton> buttons = new ArrayList<>(Arrays.asList(
+                        new ReplyButton("Give location", true),
+                        new ReplyButton("Main menu")));
                 return new Output(
                         new State(type, requestLocationStep),
                         ResponseType.MENU,
                         "Please provide your location",
-                        new ArrayList<>(Arrays.asList(
-                                new ReplyButton("Give location", true),
-                                new ReplyButton("Main menu"))),
+                        buttons,
                         null);
             case requestLocationStep:
                 if (userInput.getLocation() != null) {
