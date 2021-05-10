@@ -30,7 +30,7 @@ public class SubscriptionsService implements Handler {
                 return new Output(
                         new State(type, viewMenuStep),
                         ResponseType.QUESTION,
-                        "Your subscriptions",
+                        "Categories",
                         buttons
                 );
             case viewMenuStep:
@@ -52,7 +52,7 @@ public class SubscriptionsService implements Handler {
                     return new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
-                            "You successfully subscribed to: " + userInput.getMessage()
+                            "You successfully subscribed to: " + userInput.getMessage() + " category"
                     );
                 }
 
@@ -62,7 +62,7 @@ public class SubscriptionsService implements Handler {
                 return new Output(
                         new State(type, viewMenuStep),
                         ResponseType.CALLBACK_ANSWER,
-                        "You successfully unsubscribed from: " + userInput.getMessage()
+                        "You successfully unsubscribed from: " + userInput.getMessage() + " category"
                 );
 
         }
@@ -71,7 +71,7 @@ public class SubscriptionsService implements Handler {
         return new Output(
                 new State(type, viewMenuStep),
                 ResponseType.QUESTION,
-                "Your subscriptions",
+                "Categories",
                 buttons
         );
     }
