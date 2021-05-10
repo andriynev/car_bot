@@ -17,25 +17,27 @@ public class OutputMessage {
     private String callbackQueryId;
     private Integer messageId;
 
-    public OutputMessage(Output output, Long chatID) {
+    public OutputMessage(Output output, Long chatID, Integer messageId) {
         this.type = output.getType();
         this.message = output.getMessage();
         this.replyButtons = output.getReplyButtons();
         this.inlineButtons = output.getInlineButtons();
         this.picture = output.getPicture();
         this.chatID = chatID;
-        this.editMessageReplyMarkup = new OutputMessage(output.getEditMessageReplyMarkup(), chatID);
+        this.messageId = messageId;
     }
 
-    public OutputMessage(Output output, Long chatID, String callbackQueryId, Integer messageId) {
-        this.type = output.getType();
-        this.message = output.getMessage();
-        this.replyButtons = output.getReplyButtons();
-        this.inlineButtons = output.getInlineButtons();
-        this.picture = output.getPicture();
-        this.chatID = chatID;
+    public OutputMessage(Output output, Long chatID, Integer messageId, String callbackQueryId) {
+        this(output, chatID, messageId);
         this.callbackQueryId = callbackQueryId;
-        this.messageId = messageId;
+        if (output.getEditMessageReplyMarkup() != null) {
+            this.editMessageReplyMarkup = new OutputMessage(
+                    output.getEditMessageReplyMarkup(),
+                    chatID,
+                    messageId,
+                    callbackQueryId
+            );
+        }
     }
 
     public ResponseType getType() {

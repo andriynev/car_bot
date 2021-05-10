@@ -55,6 +55,7 @@ public class ResponseService {
         }
 
         if (outputMessage.getEditMessageReplyMarkup() != null) {
+            System.out.println(outputMessage);
             sendEditMessage(outputMessage.getEditMessageReplyMarkup());
         }
         return replyToUser;

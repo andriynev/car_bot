@@ -43,13 +43,13 @@ public class DispatcherService {
 
         OutputMessage mess;
         if (inputMessage.getType().equals(InputMessageType.DIRECT)) {
-            mess = new OutputMessage(out, user.getChatID());
+            mess = new OutputMessage(out, user.getChatID(), inputMessage.getMessageId());
         } else {
             mess = new OutputMessage(
                     out,
                     user.getChatID(),
-                    inputMessage.getCallbackId(),
-                    inputMessage.getMessageId()
+                    inputMessage.getMessageId(),
+                    inputMessage.getCallbackId()
             );
         }
 
@@ -61,7 +61,7 @@ public class DispatcherService {
         State currentState = user.getState();
         boolean isNeedToChangeMenu = !currentState.getType().equals(previousState.getType());
         Output outSecondary = routerService.route(user, new InputMessage(inputMessage));
-        OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID());
+        OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID(), inputMessage.getMessageId());
         user.setState(outSecondary.getState());
         userService.save(user);
         return responseService.sendMessages(mess, messSecondary, isNeedToChangeMenu);

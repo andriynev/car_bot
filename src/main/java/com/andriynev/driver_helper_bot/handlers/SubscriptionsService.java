@@ -91,7 +91,7 @@ public class SubscriptionsService implements Handler {
         List<InlineButton> buttons = new ArrayList<>();
         for (String subscription: User.allSubscriptions) {
             if (userSubscriptions.contains(subscription)) {
-                buttons.add(new InlineButton(subscription + " ✅", subscription));
+                buttons.add(new InlineButton(subscription + " \uD83D\uDD14", subscription));
             } else {
                 buttons.add(new InlineButton(subscription));
             }

@@ -30,7 +30,11 @@ public class ExpertService implements Handler {
     public Output handle(User user, State state, InputMessage userInput) {
         if (!state.getType().equals(type)) {
             // Need to log this exception
-            Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, defaultMessage);
+            Output out = new Output(
+                    new State(type, initialStep),
+                    ResponseType.QUESTION,
+                    "\uD83D\uDC49 " + defaultMessage
+            );
             out.setRedirect(true);
             return out;
         }
@@ -38,7 +42,11 @@ public class ExpertService implements Handler {
         Optional<CarRepairTree> tree = carRepairTreeRepository.findFirstByIdIsNotNull();
         if (!tree.isPresent()) {
             // Need to log this exception
-            Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, defaultMessage);
+            Output out = new Output(
+                    new State(type, initialStep),
+                    ResponseType.QUESTION,
+                    "\uD83D\uDC49 " + defaultMessage
+            );
             out.setRedirect(true);
             return out;
         }
@@ -47,7 +55,11 @@ public class ExpertService implements Handler {
             validateTree(tree.get(), 0);
         } catch (Exception ex) {
             // Need to log this exception
-            Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, defaultMessage);
+            Output out = new Output(
+                    new State(type, initialStep),
+                    ResponseType.QUESTION,
+                    "\uD83D\uDC49 " +defaultMessage
+            );
             out.setRedirect(true);
             return out;
         }
@@ -55,7 +67,11 @@ public class ExpertService implements Handler {
         Optional<CarRepairTree> subTree = findByState(tree.get(), state);
         if (!subTree.isPresent()) {
             // Need to log this exception
-            Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, defaultMessage);
+            Output out = new Output(
+                    new State(type, initialStep),
+                    ResponseType.QUESTION,
+                    "\uD83D\uDC49 " +defaultMessage
+            );
             out.setRedirect(true);
             return out;
         }
@@ -68,7 +84,7 @@ public class ExpertService implements Handler {
             return new Output(
                     new State(type, subTree.get().getStep()),
                     ResponseType.QUESTION,
-                    subTree.get().getQuestion(),
+                    "❓ " + subTree.get().getQuestion(),
                     buttons
             );
         }
@@ -88,7 +104,7 @@ public class ExpertService implements Handler {
             Output out = new Output(
                     new State(type, initialStep),
                     ResponseType.QUESTION,
-                    selectedSubTree.getResult(),
+                    "\uD83D\uDC49 " + selectedSubTree.getResult(),
                     new Output(
                             new State(type, initialStep),
                             ResponseType.EDIT_BUTTONS,
@@ -106,7 +122,7 @@ public class ExpertService implements Handler {
         return new Output(
                 new State(type, selectedSubTree.getStep()),
                 ResponseType.QUESTION,
-                selectedSubTree.getQuestion(),
+                "❓ " + selectedSubTree.getQuestion(),
                 buttons,
                 new Output(
                         new State(type, initialStep),
