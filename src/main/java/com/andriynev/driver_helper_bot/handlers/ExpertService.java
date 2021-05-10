@@ -27,7 +27,7 @@ public class ExpertService implements Handler {
     private final static String type = "Expert";
 
     @Override
-    public Output handle(State state, InputMessage userInput) {
+    public Output handle(User user, State state, InputMessage userInput) {
         if (!state.getType().equals(type)) {
             // Need to log this exception
             Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, defaultMessage);

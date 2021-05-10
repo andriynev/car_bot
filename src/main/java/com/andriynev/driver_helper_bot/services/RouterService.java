@@ -53,7 +53,7 @@ public class RouterService {
         }
 
         Handler handler = getHandlerByStateType(newState.getType());
-        return handler.handle(newState, inputMessage);
+        return handler.handle(user, newState, inputMessage);
 
     }
 

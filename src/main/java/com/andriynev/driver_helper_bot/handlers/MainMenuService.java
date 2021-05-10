@@ -1,9 +1,6 @@
 package com.andriynev.driver_helper_bot.handlers;
 
-import com.andriynev.driver_helper_bot.dto.InputMessage;
-import com.andriynev.driver_helper_bot.dto.Output;
-import com.andriynev.driver_helper_bot.dto.OutputMessage;
-import com.andriynev.driver_helper_bot.dto.State;
+import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +16,7 @@ public class MainMenuService implements GroupHandler {
     private final List<String> buttons = new ArrayList<>();
 
     @Override
-    public Output handle(State state, InputMessage userInput) {
+    public Output handle(User user, State state, InputMessage userInput) {
         switch (state.getStep()){
             case initialStep:
                 return new Output(

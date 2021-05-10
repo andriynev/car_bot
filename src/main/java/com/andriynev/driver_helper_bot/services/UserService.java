@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,10 +51,6 @@ public class UserService {
         System.out.println("-------------------------------");
         for (User user : userRepository.findAll()) {
             System.out.println(user);
-            if (user.getSubscriptions().size() == 0) {
-                user.setSubscriptions(User.allSubscriptions);
-                userRepository.save(user);
-            }
         }
         System.out.println();
     }

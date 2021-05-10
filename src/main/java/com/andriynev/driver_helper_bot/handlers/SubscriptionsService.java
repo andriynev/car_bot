@@ -1,32 +1,32 @@
 package com.andriynev.driver_helper_bot.handlers;
 
+import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.InputMessageType;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class SubscriptionsService implements Handler {
     private final static String type = "Subscriptions";
-    private final UserService userService;
     private static final String initialStep = "initial";
     private final static String viewMenuStep = "view_menu";
 
     @Autowired
-    public SubscriptionsService(UserService userService) {
-        this.userService = userService;
+    public SubscriptionsService() {
     }
 
     @Override
-    public Output handle(State state, InputMessage userInput) {
-        User user = userService.getOrCreateUser(userInput.getChatID());
+    public Output handle(User user, State state, InputMessage userInput) {
+        List<InlineButton> buttons = generateButtons(user.getSubscriptions());
         switch (state.getStep()){
             case initialStep:
-                List<InlineButton> buttons = generateButtons(user.getSubscriptions());
                 return new Output(
                         new State(type, viewMenuStep),
                         ResponseType.QUESTION,
@@ -42,10 +42,12 @@ public class SubscriptionsService implements Handler {
                     );
                 }
 
+
                 boolean isSubscription = !user.getSubscriptions().contains(userInput.getMessage());
+                List<String> newSubs = new ArrayList<>(user.getSubscriptions());
                 if (isSubscription) {
-                    user.getSubscriptions().add(userInput.getMessage());
-                    userService.save(user);
+                    newSubs.add(userInput.getMessage());
+                    user.setSubscriptions(newSubs);
 
                     return new Output(
                             new State(type, viewMenuStep),
@@ -54,8 +56,8 @@ public class SubscriptionsService implements Handler {
                     );
                 }
 
-                user.getSubscriptions().remove(userInput.getMessage());
-                userService.save(user);
+                newSubs.remove(userInput.getMessage());
+                user.setSubscriptions(newSubs);
 
                 return new Output(
                         new State(type, viewMenuStep),
@@ -65,7 +67,7 @@ public class SubscriptionsService implements Handler {
 
         }
 
-        List<InlineButton> buttons = generateButtons(user.getSubscriptions());
+
         return new Output(
                 new State(type, viewMenuStep),
                 ResponseType.QUESTION,

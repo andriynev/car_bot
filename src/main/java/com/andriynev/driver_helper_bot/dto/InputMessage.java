@@ -24,6 +24,13 @@ public class InputMessage {
         this.callbackId = callbackId;
     }
 
+    public InputMessage(InputMessage inputMessage) {
+        type = inputMessage.type;
+        message = "";
+        chatID = inputMessage.chatID;
+        this.callbackId = inputMessage.callbackId;
+    }
+
     public InputMessage() {
         type = InputMessageType.DIRECT;
         message = "";
@@ -45,5 +52,15 @@ public class InputMessage {
 
     public String getCallbackId() {
         return callbackId;
+    }
+
+    @Override
+    public String toString() {
+        return "InputMessage{" +
+                "type=" + type +
+                ", message='" + message + '\'' +
+                ", chatID=" + chatID +
+                ", callbackId='" + callbackId + '\'' +
+                '}';
     }
 }

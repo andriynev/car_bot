@@ -55,8 +55,10 @@ public class DispatcherService {
 
         State currentState = user.getState();
         boolean isNeedToChangeMenu = !currentState.getType().equals(previousState.getType());
-        Output outSecondary = routerService.route(user, new InputMessage());
+        Output outSecondary = routerService.route(user, new InputMessage(inputMessage));
         OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID());
+        user.setState(outSecondary.getState());
+        userService.save(user);
         return responseService.sendMessages(mess, messSecondary, isNeedToChangeMenu);
 
     }
