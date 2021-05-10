@@ -7,14 +7,14 @@ import java.util.List;
 public class Output {
     private ResponseType type;
     private String message;
-    private List<String> replyButtons;
+    private List<ReplyButton> replyButtons;
     private List<InlineButton> inlineButtons;
     private String picture;
     private State state;
     private boolean redirect;
     private Output editMessageReplyMarkup;
 
-    public Output(State state, ResponseType type, String message, List<String> replyButtons, String picture) {
+    public Output(State state, ResponseType type, String message, List<ReplyButton> replyButtons, String picture) {
         this.state = state;
         this.type = type;
         this.message = message;
@@ -72,11 +72,11 @@ public class Output {
         this.message = message;
     }
 
-    public List<String> getReplyButtons() {
+    public List<ReplyButton> getReplyButtons() {
         return replyButtons;
     }
 
-    public void setReplyButtons(List<String> replyButtons) {
+    public void setReplyButtons(List<ReplyButton> replyButtons) {
         this.replyButtons = replyButtons;
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 public class OutputMessage {
     private ResponseType type;
     private String message;
-    private List<String> replyButtons;
+    private List<ReplyButton> replyButtons;
     private List<InlineButton> inlineButtons;
     private String picture;
     private Long chatID;
@@ -56,11 +56,11 @@ public class OutputMessage {
         this.message = message;
     }
 
-    public List<String> getReplyButtons() {
+    public List<ReplyButton> getReplyButtons() {
         return replyButtons;
     }
 
-    public void setReplyButtons(List<String> replyButtons) {
+    public void setReplyButtons(List<ReplyButton> replyButtons) {
         this.replyButtons = replyButtons;
     }
 

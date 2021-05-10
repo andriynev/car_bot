@@ -80,12 +80,17 @@ public class DispatcherService {
     }
 
     private InputMessage getDirectMessage(Message message) {
+        Location location = null;
+        if (message.getLocation() != null) {
+            location = new Location(message.getLocation().getLongitude(), message.getLocation().getLatitude());
+        }
         return new InputMessage(
                 InputMessageType.DIRECT,
                 message.getText(),
                 message.getChatId(),
                 message.getMessageId(),
-                new FromUser(message.getFrom().getFirstName(), message.getFrom().getLastName(), message.getFrom().getUserName())
+                new FromUser(message.getFrom().getFirstName(), message.getFrom().getLastName(), message.getFrom().getUserName()),
+                location
         );
     }
 

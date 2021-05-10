@@ -8,17 +8,23 @@ public class InputMessage {
     private final Long chatID;
     private final Integer messageId;
     private final FromUser fromUser;
+    private Location location;
 
     // only for callback messages
     private String callbackId;
 
-    public InputMessage(InputMessageType type, String message, Long chatID, Integer messageId, FromUser from) {
+    private InputMessage(InputMessageType type, String message, Long chatID, Integer messageId, FromUser from) {
         this.type = type;
         this.message = message;
         this.chatID = chatID;
         this.callbackId = "";
         this.messageId = messageId;
         this.fromUser = from;
+    }
+
+    public InputMessage(InputMessageType type, String message, Long chatID, Integer messageId, FromUser from, Location location) {
+        this(type, message, chatID, messageId, from);
+        this.location = location;
     }
 
     public InputMessage(InputMessageType type, String message, Long chatID, Integer messageId, FromUser from, String callbackId) {
@@ -36,6 +42,10 @@ public class InputMessage {
             fromUser = inputMessage.fromUser;
         } else {
             this.fromUser = new FromUser();
+        }
+
+        if (inputMessage.location != null) {
+            location = inputMessage.location;
         }
     }
 
@@ -76,6 +86,14 @@ public class InputMessage {
         this.callbackId = callbackId;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     @Override
     public String toString() {
         return "InputMessage{" +
@@ -84,6 +102,7 @@ public class InputMessage {
                 ", chatID=" + chatID +
                 ", messageId=" + messageId +
                 ", fromUser=" + fromUser +
+                ", location=" + location +
                 ", callbackId='" + callbackId + '\'' +
                 '}';
     }

@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.services;
 import com.andriynev.driver_helper_bot.dto.InlineButton;
 import com.andriynev.driver_helper_bot.dto.NewsItem;
 import com.andriynev.driver_helper_bot.dto.OutputMessage;
+import com.andriynev.driver_helper_bot.dto.ReplyButton;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -142,8 +143,8 @@ public class ResponseService {
     private void sendMenu(OutputMessage outputMessage) {
         SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
 
-        ArrayList<String> button = new ArrayList<>();
-        button.add("Main menu");
+        ArrayList<ReplyButton> button = new ArrayList<>();
+        button.add(new ReplyButton("Main menu"));
         ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(button);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
@@ -170,7 +171,7 @@ public class ResponseService {
     }
 
 
-    private ReplyKeyboardMarkup getReplyKeyboard(List<String> replyButtons) {
+    private ReplyKeyboardMarkup getReplyKeyboard(List<ReplyButton> replyButtons) {
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
@@ -179,9 +180,13 @@ public class ResponseService {
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
-        for (String button : replyButtons) {
+        for (ReplyButton button : replyButtons) {
             KeyboardRow keyboardRow = new KeyboardRow();
-            keyboardRow.add(new KeyboardButton(button));
+            KeyboardButton btn = KeyboardButton.builder()
+                    .text(button.getTitle())
+                    .requestLocation(button.isRequestLocation())
+                    .build();
+            keyboardRow.add(btn);
             keyboard.add(keyboardRow);
         }
 

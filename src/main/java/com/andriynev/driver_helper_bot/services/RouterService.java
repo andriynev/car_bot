@@ -1,14 +1,11 @@
 package com.andriynev.driver_helper_bot.services;
 
-import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.handlers.GroupHandler;
 import com.andriynev.driver_helper_bot.handlers.Handler;
-import com.andriynev.driver_helper_bot.handlers.SubscriptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 
 import java.util.*;
 
