@@ -49,10 +49,13 @@ public class ResponseService {
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case CALLBACK_ANSWER:
-                sendEditMessage(outputMessage);
                 replyToUser = sendAnswerCallbackQuery(outputMessage);
             default:
                 break;
+        }
+
+        if (outputMessage.getEditMessageReplyMarkup() != null) {
+            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
         }
         return replyToUser;
     }
@@ -142,6 +145,10 @@ public class ResponseService {
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
         driverHelperBot.sendMessage(sendMessage);
+
+        if (outputMessage.getEditMessageReplyMarkup() != null) {
+            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
+        }
     }
 
     private void sendEditMessage(OutputMessage outputMessage) {
@@ -161,6 +168,10 @@ public class ResponseService {
         SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
 
         driverHelperBot.sendMessage(sendMessage);
+
+        if (outputMessage.getEditMessageReplyMarkup() != null) {
+            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
+        }
     }
 
 
@@ -206,36 +217,6 @@ public class ResponseService {
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
         return inlineKeyboardMarkup;
-    }
-
-    private SendMessage createMessageWithKeyboard(final Long chatId,
-                                                  String textMessage,
-                                                  final ReplyKeyboardMarkup replyKeyboardMarkup) {
-        SendMessage sendMessage = initMessage(chatId, textMessage);
-
-        if (replyKeyboardMarkup != null) {
-            sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        }
-
-        return sendMessage;
-    }
-
-    private SendMessage createMessageWithKeyboard(Long chatId, String textMessage) {
-        SendMessage sendMessage = initMessage(chatId, textMessage);
-        return sendMessage;
-    }
-
-    private SendMessage createMessageWithKeyboard(Long chatId,
-                                                  String textMessage,
-                                                  InlineKeyboardMarkup inlineKeyboardMarkup) {
-
-        SendMessage sendMessage = initMessage(chatId, textMessage);
-
-        if (inlineKeyboardMarkup != null) {
-            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        }
-
-        return sendMessage;
     }
 
     private SendMessage initMessage(Long chatId, String textMessage) {

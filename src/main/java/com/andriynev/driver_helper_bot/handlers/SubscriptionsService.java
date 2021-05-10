@@ -53,7 +53,11 @@ public class SubscriptionsService implements Handler {
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
                             "You successfully subscribed to: " + userInput.getMessage() + " category",
-                            buttons
+                            new Output(
+                                    new State(type, viewMenuStep),
+                                    ResponseType.EDIT_BUTTONS,
+                                    buttons
+                            )
                     );
                 }
 
@@ -65,7 +69,11 @@ public class SubscriptionsService implements Handler {
                         new State(type, viewMenuStep),
                         ResponseType.CALLBACK_ANSWER,
                         "You successfully unsubscribed from: " + userInput.getMessage() + " category",
-                        buttons
+                        new Output(
+                                new State(type, viewMenuStep),
+                                ResponseType.EDIT_BUTTONS,
+                                buttons
+                        )
                 );
 
         }

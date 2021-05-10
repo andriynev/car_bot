@@ -12,6 +12,7 @@ public class Output {
     private String picture;
     private State state;
     private boolean redirect;
+    private Output editMessageReplyMarkup;
 
     public Output(State state, ResponseType type, String message, List<String> replyButtons, String picture) {
         this.state = state;
@@ -21,16 +22,37 @@ public class Output {
         this.picture = picture;
     }
 
+    public Output(State state, ResponseType type, String message, List<InlineButton> inlineButtons, Output editMessageReplyMarkup) {
+        this.state = state;
+        this.type = type;
+        this.message = message;
+        this.inlineButtons = inlineButtons;
+        this.editMessageReplyMarkup = editMessageReplyMarkup;
+    }
+
     public Output(State state, ResponseType type, String message) {
         this.state = state;
         this.type = type;
         this.message = message;
     }
 
+    public Output(State state, ResponseType type, String message, Output editMessageReplyMarkup) {
+        this.state = state;
+        this.type = type;
+        this.message = message;
+        this.editMessageReplyMarkup = editMessageReplyMarkup;
+    }
+
     public Output(State state, ResponseType type, String message, List<InlineButton> inlineButtons) {
         this.state = state;
         this.type = type;
         this.message = message;
+        this.inlineButtons = inlineButtons;
+    }
+
+    public Output(State state, ResponseType type, List<InlineButton> inlineButtons) {
+        this.state = state;
+        this.type = type;
         this.inlineButtons = inlineButtons;
     }
 
@@ -90,6 +112,14 @@ public class Output {
         this.redirect = redirect;
     }
 
+    public Output getEditMessageReplyMarkup() {
+        return editMessageReplyMarkup;
+    }
+
+    public void setEditMessageReplyMarkup(Output editMessageReplyMarkup) {
+        this.editMessageReplyMarkup = editMessageReplyMarkup;
+    }
+
     @Override
     public String toString() {
         return "Output{" +
@@ -99,6 +129,8 @@ public class Output {
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
                 ", state=" + state +
+                ", redirect=" + redirect +
+                ", editMessageReplyMarkup=" + editMessageReplyMarkup +
                 '}';
     }
 }

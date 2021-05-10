@@ -11,6 +11,7 @@ public class OutputMessage {
     private List<InlineButton> inlineButtons;
     private String picture;
     private Long chatID;
+    private OutputMessage editMessageReplyMarkup;
 
     // only for callback messages
     private String callbackQueryId;
@@ -23,6 +24,7 @@ public class OutputMessage {
         this.inlineButtons = output.getInlineButtons();
         this.picture = output.getPicture();
         this.chatID = chatID;
+        this.editMessageReplyMarkup = new OutputMessage(output.getEditMessageReplyMarkup(), chatID);
     }
 
     public OutputMessage(Output output, Long chatID, String callbackQueryId, Integer messageId) {
@@ -100,6 +102,14 @@ public class OutputMessage {
         this.messageId = messageId;
     }
 
+    public OutputMessage getEditMessageReplyMarkup() {
+        return editMessageReplyMarkup;
+    }
+
+    public void setEditMessageReplyMarkup(OutputMessage editMessageReplyMarkup) {
+        this.editMessageReplyMarkup = editMessageReplyMarkup;
+    }
+
     @Override
     public String toString() {
         return "OutputMessage{" +
@@ -109,6 +119,7 @@ public class OutputMessage {
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
                 ", chatID=" + chatID +
+                ", editMessageReplyMarkup=" + editMessageReplyMarkup +
                 ", callbackQueryId='" + callbackQueryId + '\'' +
                 ", messageId=" + messageId +
                 '}';

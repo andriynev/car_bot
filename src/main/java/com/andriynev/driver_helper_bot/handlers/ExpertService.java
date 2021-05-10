@@ -73,9 +73,28 @@ public class ExpertService implements Handler {
             );
         }
 
+        List<InlineButton> previousButtons = new ArrayList<>();
+        for (String answer: subTree.get().getAnswers()) {
+            if (userInput.getMessage().equals(answer)) {
+                previousButtons.add(new InlineButton(answer + " ✅", answer));
+                continue;
+            }
+
+            previousButtons.add(new InlineButton(answer));
+        }
+
         CarRepairTree selectedSubTree = subTree.get().getOutcomes().get(userInput.getMessage());
         if (selectedSubTree.getResult() != null) {
-            Output out = new Output(new State(type, initialStep), ResponseType.QUESTION, selectedSubTree.getResult());
+            Output out = new Output(
+                    new State(type, initialStep),
+                    ResponseType.QUESTION,
+                    selectedSubTree.getResult(),
+                    new Output(
+                            new State(type, initialStep),
+                            ResponseType.EDIT_BUTTONS,
+                            previousButtons
+                    )
+            );
             out.setRedirect(true);
             return out;
         }
@@ -88,7 +107,12 @@ public class ExpertService implements Handler {
                 new State(type, selectedSubTree.getStep()),
                 ResponseType.QUESTION,
                 selectedSubTree.getQuestion(),
-                buttons
+                buttons,
+                new Output(
+                        new State(type, initialStep),
+                        ResponseType.EDIT_BUTTONS,
+                        previousButtons
+                )
         );
     }
 
