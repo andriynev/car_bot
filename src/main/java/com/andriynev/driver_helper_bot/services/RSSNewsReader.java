@@ -59,7 +59,7 @@ public class RSSNewsReader {
                     lastPublishedAt = entryPublishedDate;
                 }
 
-                Optional<NewsItem> item = parseFeedEntry((SyndEntryImpl) entry);
+                Optional<NewsItem> item = parseFeedEntry(source.getCategory(), (SyndEntryImpl) entry);
                 if (!item.isPresent()) {
                     continue;
                 }
@@ -78,12 +78,12 @@ public class RSSNewsReader {
         return news;
     }
 
-    private Optional<NewsItem> parseFeedEntry(SyndEntryImpl feedEntry) {
+    private Optional<NewsItem> parseFeedEntry(String category, SyndEntryImpl feedEntry) {
 
         Document doc = Jsoup.parse(feedEntry.getDescription().getValue());
         String photoUrl = doc.select("div > img").attr("src");
         String text = doc.select("p").first().text();
-        NewsItem item = new NewsItem(feedEntry.getTitle(), text, photoUrl, feedEntry.getLink());
+        NewsItem item = new NewsItem(feedEntry.getTitle(), text, photoUrl, feedEntry.getLink(), category);
         return Optional.of(item);
     }
 

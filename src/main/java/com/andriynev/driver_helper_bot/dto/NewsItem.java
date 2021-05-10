@@ -5,12 +5,14 @@ public class NewsItem {
     private String title;
     private String text;
     private String originLink;
+    private String category;
 
-    public NewsItem(String title, String text, String photoUrl, String originLink) {
+    public NewsItem(String title, String text, String photoUrl, String originLink, String category) {
         this.title = title;
         this.text = text;
         this.photoUrl = photoUrl;
         this.originLink = originLink;
+        this.category = category;
     }
 
     public String getPhotoUrl() {
@@ -45,6 +47,14 @@ public class NewsItem {
         this.originLink = originLink;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "NewsItem{" +
@@ -52,6 +62,7 @@ public class NewsItem {
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", originLink='" + originLink + '\'' +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

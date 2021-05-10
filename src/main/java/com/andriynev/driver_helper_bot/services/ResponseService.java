@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 @Service
 public class ResponseService {
     private final String detailsUkr = "Деталі";
+    private final String categoryUkr = "Категорія";
     private final String markdownV2MessageType = "MarkdownV2";
     DriverHelperBot driverHelperBot;
     private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([.+\\-!=>()#_*\\[\\]~`|{}]{1,1})");
@@ -89,10 +90,12 @@ public class ResponseService {
         String caption = String.format("* %s *\n" + // bold title
                 "\n" + // new line to separate title and text
                 "%s\n" + // main text
-                "\n" + // new line to separate text and link
+                "\n" + // new line to separate text and category
+                "%s: %s\n\n" +
                 "\uD83D\uDC49 [%s](%s)",
                 title,
                 text,
+                categoryUkr, item.getCategory(),
                 detailsUkr, item.getOriginLink());
 
         SendPhoto sendPhoto = SendPhoto.builder()
