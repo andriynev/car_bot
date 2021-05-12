@@ -4,8 +4,6 @@ package com.andriynev.driver_helper_bot.services;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.InputMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -21,7 +19,7 @@ public class DispatcherService {
     private final ResponseService responseService;
 
     @Autowired
-    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService, NewsService newsService) {
+    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService) {
         this.userService = userService;
         this.routerService = routerService;
         this.responseService = responseService;
@@ -110,11 +108,5 @@ public class DispatcherService {
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
         return responseService.onWebhookUpdateReceived(update);
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void runAfterStartup() {
-        System.out.println("DispatcherService is running........");
-
     }
 }
