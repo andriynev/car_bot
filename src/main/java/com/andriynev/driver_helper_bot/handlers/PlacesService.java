@@ -64,14 +64,24 @@ public class PlacesService implements Handler {
                             false
                     );
                     Output example = preparePlaceItem(new State(type, placeInfoStep), item);
+                    PlaceItem item2 = new PlaceItem(
+                            "Place name 2.0 +",
+                            "вулиця Київ",
+                            "2,6 км",
+                            "8 хв",
+                            "3.4",
+                            new Location(30.64899530, 50.4486860),
+                            false
+                    );
+                    Output example2 = preparePlaceItem(new State(type, placeInfoStep), item2);
                     Output output = new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
-                            userInput.getLocation().toString(),
+                            "Your location: " + userInput.getLocation().toString(),
                             menuButtons,
                             null
                     );
-                    output.setMessages(Collections.singletonList(example));
+                    output.setMessages(Arrays.asList(example, example2));
                     return output;
                 }
                 return new Output(
@@ -86,18 +96,20 @@ public class PlacesService implements Handler {
                     Output output = new Output(
                             new State(type, initialStep),
                             ResponseType.MESSAGE,
-                            deserializedValue.toString()
+                            "Place location: " + deserializedValue.toString()
                     );
                     output.setRedirect(true);
+                    return output;
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
                 Output output = new Output(
                         new State(type, initialStep),
                         ResponseType.MESSAGE,
-                        userInput.getMessage()
+                        "User input: " +userInput.getMessage()
                 );
                 output.setRedirect(true);
+                return output;
             default:
                 return new Output(new State(type, initialStep), ResponseType.MENU, "Please provide place type");
         }

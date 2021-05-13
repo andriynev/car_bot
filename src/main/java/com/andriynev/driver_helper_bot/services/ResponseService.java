@@ -65,7 +65,7 @@ public class ResponseService {
                 case QUESTION:
                     sendSimpleMessage(mess);
                 case EDIT_BUTTONS:
-                    sendEditMessage(outputMessage.getEditMessageReplyMarkup());
+                    //sendEditMessage(mess);
             }
         }
         
