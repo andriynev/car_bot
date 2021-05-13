@@ -1,7 +1,8 @@
 package com.andriynev.driver_helper_bot.places;
 
-import com.google.maps.*;
-import com.google.maps.model.*;
+import com.andriynev.driver_helper_bot.dto.Location;
+import com.andriynev.driver_helper_bot.dto.PlaceItem;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlacesApiClient {
-    private GoogleApiConfig googleApiConfig;
+    private final GoogleApiConfig googleApiConfig;
 
     @Autowired
     public PlacesApiClient(GoogleApiConfig googleApiConfig) {

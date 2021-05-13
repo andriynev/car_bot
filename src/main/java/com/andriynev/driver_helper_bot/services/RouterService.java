@@ -14,12 +14,12 @@ public class RouterService {
     private final Map<String, Handler> handlers = new HashMap<>();
 
     @Autowired
-    public RouterService(Handler expertService, Handler stoService, Handler subscriptionsService, GroupHandler mainMenuService) {
+    public RouterService(Handler expertService, Handler placesService, Handler subscriptionsService, GroupHandler mainMenuService) {
         handlers.put(expertService.getType(), expertService);
-        handlers.put(stoService.getType(), stoService);
+        handlers.put(placesService.getType(), placesService);
         handlers.put(subscriptionsService.getType(), subscriptionsService);
 
-        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, stoService, subscriptionsService));
+        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, placesService, subscriptionsService));
         mainMenuService.setHandlers(group);
         handlers.put(mainMenuService.getType(), mainMenuService);
 

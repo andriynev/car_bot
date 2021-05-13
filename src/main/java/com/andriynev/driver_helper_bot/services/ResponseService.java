@@ -1,9 +1,7 @@
 package com.andriynev.driver_helper_bot.services;
 
-import com.andriynev.driver_helper_bot.dto.InlineButton;
-import com.andriynev.driver_helper_bot.dto.NewsItem;
-import com.andriynev.driver_helper_bot.dto.OutputMessage;
-import com.andriynev.driver_helper_bot.dto.ReplyButton;
+import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -47,6 +45,7 @@ public class ResponseService {
         switch (outputMessage.getType()) {
             case MENU:
             case QUESTION:
+            case MESSAGE:
                 replyToUser = sendMessageForm(outputMessage);
                 break;
             case CALLBACK_ANSWER:
@@ -58,15 +57,28 @@ public class ResponseService {
         if (outputMessage.getEditMessageReplyMarkup() != null) {
             sendEditMessage(outputMessage.getEditMessageReplyMarkup());
         }
+
+        for (OutputMessage mess : outputMessage.getMessages()) {
+            switch (mess.getType()){
+                case MENU:
+                case MESSAGE:
+                case QUESTION:
+                    sendSimpleMessage(mess);
+                case EDIT_BUTTONS:
+                    sendEditMessage(outputMessage.getEditMessageReplyMarkup());
+            }
+        }
+        
         return replyToUser;
     }
 
     public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg, boolean isNeedToChangeMenu) {
         if (!isNeedToChangeMenu) {
-            sendFinalMessage(finalMsg);
+            sendSimpleMessage(finalMsg);
         } else {
             sendMenu(finalMsg);
         }
+
         if (finalMsg.getEditMessageReplyMarkup() != null) {
             sendEditMessage(finalMsg.getEditMessageReplyMarkup());
         }
@@ -76,10 +88,6 @@ public class ResponseService {
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
         return driverHelperBot.onWebhookUpdateReceived(update);
-    }
-
-    public void sendRawMessage(SendMessage sendMessage) {
-        driverHelperBot.sendMessage(sendMessage);
     }
 
     public void sendNewsItem(NewsItem item, Long chatID) {
@@ -119,7 +127,7 @@ public class ResponseService {
 
     private SendMessage sendMessageForm(OutputMessage outputMessage) {
         SendMessage sendMessage;
-        sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
+        sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage(), outputMessage.getMessageType());
         if (outputMessage.getReplyButtons() != null && !outputMessage.getReplyButtons().isEmpty()) {
             ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(outputMessage.getReplyButtons());
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
@@ -141,7 +149,11 @@ public class ResponseService {
     }
 
     private void sendMenu(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
+        SendMessage sendMessage = initMessage(
+                outputMessage.getChatID(),
+                outputMessage.getMessage(),
+                outputMessage.getMessageType()
+        );
 
         ArrayList<ReplyButton> button = new ArrayList<>();
         button.add(new ReplyButton("Main menu"));
@@ -164,8 +176,12 @@ public class ResponseService {
         driverHelperBot.sendMessage(msg);
     }
 
-    private void sendFinalMessage(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(outputMessage.getChatID(), outputMessage.getMessage());
+    private void sendSimpleMessage(OutputMessage outputMessage) {
+        SendMessage sendMessage = initMessage(
+                outputMessage.getChatID(),
+                outputMessage.getMessage(),
+                outputMessage.getMessageType()
+        );
 
         driverHelperBot.sendMessage(sendMessage);
     }
@@ -219,11 +235,19 @@ public class ResponseService {
         return inlineKeyboardMarkup;
     }
 
-    private SendMessage initMessage(Long chatId, String textMessage) {
+    private SendMessage initMessage(Long chatId, String textMessage, MessageType messageType) {
 
         SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId.toString());
+        if (messageType.equals(MessageType.MARKDOWN)) {
+            sendMessage.enableMarkdownV2(true);
+            textMessage = telegramMarkdownForbiddenSymbolsPattern
+                    .matcher(textMessage)
+                    .replaceAll("\\\\$1");
+
+            textMessage = textMessage.replace("^bold", "*");
+        }
+
         sendMessage.setText(textMessage);
 
         return sendMessage;

@@ -1,7 +1,9 @@
 package com.andriynev.driver_helper_bot.dto;
 
+import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OutputMessage {
@@ -12,12 +14,14 @@ public class OutputMessage {
     private String picture;
     private Long chatID;
     private OutputMessage editMessageReplyMarkup;
+    private MessageType messageType;
+    private List<OutputMessage> messages;
 
     // only for callback messages
     private String callbackQueryId;
     private Integer messageId;
 
-    public OutputMessage(Output output, Long chatID, Integer messageId) {
+    private void init(Output output, Long chatID, Integer messageId) {
         this.type = output.getType();
         this.message = output.getMessage();
         this.replyButtons = output.getReplyButtons();
@@ -25,11 +29,21 @@ public class OutputMessage {
         this.picture = output.getPicture();
         this.chatID = chatID;
         this.messageId = messageId;
+        this.messageType = output.getMessageType();
+    }
+
+    public OutputMessage(Output output, Long chatID, Integer messageId) {
+        init(output, chatID, messageId);
+        this.messages = new ArrayList<>();
+        for (Output out : output.getMessages()) {
+            this.messages.add(new OutputMessage(out, chatID, messageId));
+        }
     }
 
     public OutputMessage(Output output, Long chatID, Integer messageId, String callbackQueryId) {
-        this(output, chatID, messageId);
+        init(output, chatID, messageId);
         this.callbackQueryId = callbackQueryId;
+        
         if (output.getEditMessageReplyMarkup() != null) {
             this.editMessageReplyMarkup = new OutputMessage(
                     output.getEditMessageReplyMarkup(),
@@ -37,6 +51,11 @@ public class OutputMessage {
                     messageId,
                     callbackQueryId
             );
+        }
+
+        this.messages = new ArrayList<>();
+        for (Output out : output.getMessages()) {
+            this.messages.add(new OutputMessage(out, chatID, messageId, callbackQueryId));
         }
     }
 
@@ -112,6 +131,25 @@ public class OutputMessage {
         this.editMessageReplyMarkup = editMessageReplyMarkup;
     }
 
+    public MessageType getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
+    }
+
+    public List<OutputMessage> getMessages() {
+        if (messages == null) {
+            return new ArrayList<>();
+        }
+        return messages;
+    }
+
+    public void setMessages(List<OutputMessage> messages) {
+        this.messages = messages;
+    }
+
     @Override
     public String toString() {
         return "OutputMessage{" +
@@ -122,6 +160,7 @@ public class OutputMessage {
                 ", picture='" + picture + '\'' +
                 ", chatID=" + chatID +
                 ", editMessageReplyMarkup=" + editMessageReplyMarkup +
+                ", messageType=" + messageType +
                 ", callbackQueryId='" + callbackQueryId + '\'' +
                 ", messageId=" + messageId +
                 '}';
