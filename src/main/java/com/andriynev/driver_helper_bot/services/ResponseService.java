@@ -177,11 +177,7 @@ public class ResponseService {
     }
 
     private void sendSimpleMessage(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(
-                outputMessage.getChatID(),
-                outputMessage.getMessage(),
-                outputMessage.getMessageType()
-        );
+        SendMessage sendMessage = sendMessageForm(outputMessage);
 
         driverHelperBot.sendMessage(sendMessage);
     }

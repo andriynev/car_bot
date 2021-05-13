@@ -63,7 +63,7 @@ public class PlacesService implements Handler {
                             new Location(30.44899530, 50.4476860),
                             false
                     );
-                    Output example = preparePlaceItem(new State(type, initialStep), item);
+                    Output example = preparePlaceItem(new State(type, placeInfoStep), item);
                     Output output = new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
@@ -74,7 +74,11 @@ public class PlacesService implements Handler {
                     output.setMessages(Collections.singletonList(example));
                     return output;
                 }
-                return new Output(new State(type, initialStep), ResponseType.QUESTION, "Please provide place type");
+                return new Output(
+                        new State(type, giveLocationStep),
+                        ResponseType.QUESTION,
+                        "Sorry, please provide your location again"
+                );
             case placeInfoStep:
                 ObjectMapper mapper = new ObjectMapper();
                 try {
