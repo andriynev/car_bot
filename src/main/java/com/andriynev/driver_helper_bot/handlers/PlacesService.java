@@ -79,19 +79,21 @@ public class PlacesService implements Handler {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     Location deserializedValue = mapper.readValue(userInput.getMessage(), Location.class);
-                    return new Output(
+                    Output output = new Output(
                             new State(type, initialStep),
                             ResponseType.MESSAGE,
                             deserializedValue.toString()
                     );
+                    output.setRedirect(true);
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-                return new Output(
+                Output output = new Output(
                         new State(type, initialStep),
                         ResponseType.MESSAGE,
                         userInput.getMessage()
                 );
+                output.setRedirect(true);
             default:
                 return new Output(new State(type, initialStep), ResponseType.MENU, "Please provide place type");
         }
