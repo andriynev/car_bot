@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -54,36 +55,22 @@ public class ResponseService {
                 break;
         }
 
-        if (outputMessage.getEditMessageReplyMarkup() != null) {
-            sendEditMessage(outputMessage.getEditMessageReplyMarkup());
-        }
-
         for (OutputMessage mess : outputMessage.getMessages()) {
             switch (mess.getType()){
                 case MENU:
                 case MESSAGE:
                 case QUESTION:
                     sendSimpleMessage(mess);
+                    continue;
                 case EDIT_BUTTONS:
-                    //sendEditMessage(mess);
+                    sendEditMessage(mess);
+                    continue;
+                case LOCATION:
+                    sendLocation(mess);
             }
         }
         
         return replyToUser;
-    }
-
-    public BotApiMethod<?> sendMessages(OutputMessage finalMsg, OutputMessage secondaryMsg, boolean isNeedToChangeMenu) {
-        if (!isNeedToChangeMenu) {
-            sendSimpleMessage(finalMsg);
-        } else {
-            sendMenu(finalMsg);
-        }
-
-        if (finalMsg.getEditMessageReplyMarkup() != null) {
-            sendEditMessage(finalMsg.getEditMessageReplyMarkup());
-        }
-
-        return sendMessageForm(secondaryMsg);
     }
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
@@ -182,6 +169,15 @@ public class ResponseService {
         driverHelperBot.sendMessage(sendMessage);
     }
 
+    private void sendLocation(OutputMessage outputMessage) {
+        SendLocation sendLocation = new SendLocation(
+                outputMessage.getChatID().toString(),
+                outputMessage.getLatitude(),
+                outputMessage.getLongitude()
+        );
+
+        driverHelperBot.sendMessage(sendLocation);
+    }
 
     private ReplyKeyboardMarkup getReplyKeyboard(List<ReplyButton> replyButtons) {
 

@@ -8,14 +8,15 @@ import java.util.List;
 
 public class Output {
     private ResponseType type;
-    private String message;
     private List<ReplyButton> replyButtons;
     private List<InlineButton> inlineButtons;
     private String picture;
     private State state;
     private boolean redirect;
     private MessageType messageType;
-    private Output editMessageReplyMarkup;
+    private String message;
+    private double longitude;
+    private double latitude;
     private List<Output> messages;
 
     public Output(State state, ResponseType type, String message, List<ReplyButton> replyButtons, String picture) {
@@ -27,27 +28,10 @@ public class Output {
         this.messageType = MessageType.PLAIN;
     }
 
-    public Output(State state, ResponseType type, String message, List<InlineButton> inlineButtons, Output editMessageReplyMarkup) {
-        this.state = state;
-        this.type = type;
-        this.message = message;
-        this.inlineButtons = inlineButtons;
-        this.editMessageReplyMarkup = editMessageReplyMarkup;
-        this.messageType = MessageType.PLAIN;
-    }
-
     public Output(State state, ResponseType type, String message) {
         this.state = state;
         this.type = type;
         this.message = message;
-        this.messageType = MessageType.PLAIN;
-    }
-
-    public Output(State state, ResponseType type, String message, Output editMessageReplyMarkup) {
-        this.state = state;
-        this.type = type;
-        this.message = message;
-        this.editMessageReplyMarkup = editMessageReplyMarkup;
         this.messageType = MessageType.PLAIN;
     }
 
@@ -64,6 +48,14 @@ public class Output {
         this.type = type;
         this.inlineButtons = inlineButtons;
         this.messageType = MessageType.PLAIN;
+    }
+
+    public Output(State state, double latitude, double longitude) {
+        this.state = state;
+        this.type = ResponseType.LOCATION;
+        this.messageType = MessageType.PLAIN;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public ResponseType getType() {
@@ -122,14 +114,6 @@ public class Output {
         this.redirect = redirect;
     }
 
-    public Output getEditMessageReplyMarkup() {
-        return editMessageReplyMarkup;
-    }
-
-    public void setEditMessageReplyMarkup(Output editMessageReplyMarkup) {
-        this.editMessageReplyMarkup = editMessageReplyMarkup;
-    }
-
     public MessageType getMessageType() {
         return messageType;
     }
@@ -149,18 +133,35 @@ public class Output {
         this.messages = messages;
     }
 
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     @Override
     public String toString() {
         return "Output{" +
                 "type=" + type +
-                ", message='" + message + '\'' +
                 ", replyButtons=" + replyButtons +
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
                 ", state=" + state +
                 ", redirect=" + redirect +
                 ", messageType=" + messageType +
-                ", editMessageReplyMarkup=" + editMessageReplyMarkup +
+                ", message='" + message + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
                 ", messages=" + messages +
                 '}';
     }

@@ -6,10 +6,7 @@ import com.andriynev.driver_helper_bot.enums.ResponseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ExpertService implements Handler {
@@ -104,13 +101,13 @@ public class ExpertService implements Handler {
             Output out = new Output(
                     new State(type, initialStep),
                     ResponseType.QUESTION,
-                    "\uD83D\uDC49 " + selectedSubTree.getResult(),
-                    new Output(
-                            new State(type, initialStep),
-                            ResponseType.EDIT_BUTTONS,
-                            previousButtons
-                    )
+                    "\uD83D\uDC49 " + selectedSubTree.getResult()
             );
+            out.setMessages(Collections.singletonList(new Output(
+                    new State(type, initialStep),
+                    ResponseType.EDIT_BUTTONS,
+                    previousButtons
+            )));
             out.setRedirect(true);
             return out;
         }
@@ -119,17 +116,19 @@ public class ExpertService implements Handler {
         for (String answer: selectedSubTree.getAnswers()) {
             buttons.add(new InlineButton(answer));
         }
-        return new Output(
+        Output output = new Output(
                 new State(type, selectedSubTree.getStep()),
                 ResponseType.QUESTION,
                 "❓ " + selectedSubTree.getQuestion(),
-                buttons,
-                new Output(
-                        new State(type, initialStep),
-                        ResponseType.EDIT_BUTTONS,
-                        previousButtons
-                )
+                buttons
         );
+        output.setMessages(Collections.singletonList(new Output(
+                new State(type, initialStep),
+                ResponseType.EDIT_BUTTONS,
+                previousButtons
+        )));
+
+        return output;
     }
 
     @Override

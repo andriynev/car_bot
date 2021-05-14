@@ -26,12 +26,16 @@ public class PlacesService implements Handler {
     private final String distanceUkr = "Відстань";
     private final String durationUkr = "Час";
     private final String locationUkr = "На карті";
+    private final String carRepairUkr = "СТО";
+    private final String carRepair = "car_repair";
+    private final String carWashUkr = "Мийка";
+    private final String carWash = "car_wash";
 
     @Override
     public Output handle(User user, State state, InputMessage userInput) {
         List<InlineButton> buttons = new ArrayList<>(Arrays.asList(
-                new InlineButton("Car Repair"),
-                new InlineButton("Car Wash")));
+                new InlineButton(carRepairUkr, carRepair),
+                new InlineButton(carWashUkr, carWash)));
         switch (state.getStep()){
             case initialStep:
 
@@ -39,18 +43,28 @@ public class PlacesService implements Handler {
                         new State(type, requestLocationStep),
                         ResponseType.QUESTION,
                         "Please provide place type",
-                        buttons,
-                        null);
+                        buttons);
             case requestLocationStep:
+                for (InlineButton btn: buttons) {
+                    if (btn.getData().equals(userInput.getMessage())) {
+                        btn.setTitle("\uD83D\uDC49 "+btn.getTitle());
+                    }
+                }
                 List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
                         new ReplyButton("Give location", true),
                         new ReplyButton("Main menu")));
-                return new Output(
+                Output output = new Output(
                         new State(type, giveLocationStep),
                         ResponseType.MENU,
                         "Please provide your location",
                         menuButtons,
                         null);
+                output.setMessages(Collections.singletonList(new Output(
+                        new State(type, giveLocationStep),
+                        ResponseType.EDIT_BUTTONS,
+                        buttons
+                        )));
+                return output;
             case giveLocationStep:
                 if (userInput.getLocation() != null) {
                     menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
@@ -74,7 +88,7 @@ public class PlacesService implements Handler {
                             false
                     );
                     Output example2 = preparePlaceItem(new State(type, placeInfoStep), item2);
-                    Output output = new Output(
+                    output = new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
                             "Your location: " + userInput.getLocation().toString(),
@@ -93,17 +107,17 @@ public class PlacesService implements Handler {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     Location deserializedValue = mapper.readValue(userInput.getMessage(), Location.class);
-                    Output output = new Output(
+                    output = new Output(
                             new State(type, initialStep),
-                            ResponseType.MESSAGE,
-                            "Place location: " + deserializedValue.toString()
+                            deserializedValue.getLatitude(),
+                            deserializedValue.getLongitude()
                     );
                     output.setRedirect(true);
                     return output;
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-                Output output = new Output(
+                output = new Output(
                         new State(type, initialStep),
                         ResponseType.MESSAGE,
                         "User input: " +userInput.getMessage()

@@ -10,6 +10,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 @Service
@@ -62,7 +66,14 @@ public class DispatcherService {
         OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID(), inputMessage.getMessageId());
         user.setState(outSecondary.getState());
         userService.save(user);
-        return responseService.sendMessages(mess, messSecondary, isNeedToChangeMenu);
+        if (isNeedToChangeMenu) {
+            ArrayList<ReplyButton> button = new ArrayList<>();
+            button.add(new ReplyButton("Main menu"));
+            mess.setReplyButtons(button);
+        }
+
+        mess.setMessages(Collections.singletonList(messSecondary));
+        return responseService.sendMessage(mess);
 
     }
 

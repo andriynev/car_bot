@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -45,32 +46,37 @@ public class SubscriptionsService implements Handler {
                     newSubs.add(userInput.getMessage());
                     user.setSubscriptions(newSubs);
                     buttons = generateButtons(newSubs);
-                    return new Output(
+                    Output output =  new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
-                            "You successfully subscribed to: " + userInput.getMessage() + " category",
-                            new Output(
-                                    new State(type, viewMenuStep),
-                                    ResponseType.EDIT_BUTTONS,
-                                    buttons
-                            )
+                            "You successfully subscribed to: " + userInput.getMessage() + " category"
                     );
+                    output.setMessages(Collections.singletonList(new Output(
+                            new State(type, viewMenuStep),
+                            ResponseType.EDIT_BUTTONS,
+                            buttons
+                    )));
+
+                    return output;
                 }
 
                 newSubs.remove(userInput.getMessage());
                 user.setSubscriptions(newSubs);
                 buttons = generateButtons(newSubs);
 
-                return new Output(
+                Output output = new Output(
                         new State(type, viewMenuStep),
                         ResponseType.CALLBACK_ANSWER,
-                        "You successfully unsubscribed from: " + userInput.getMessage() + " category",
-                        new Output(
-                                new State(type, viewMenuStep),
-                                ResponseType.EDIT_BUTTONS,
-                                buttons
-                        )
+                        "You successfully unsubscribed from: " + userInput.getMessage() + " category"
                 );
+
+                output.setMessages(Collections.singletonList(new Output(
+                        new State(type, viewMenuStep),
+                        ResponseType.EDIT_BUTTONS,
+                        buttons
+                )));
+
+                return output;
 
         }
 

@@ -13,13 +13,16 @@ public class OutputMessage {
     private List<InlineButton> inlineButtons;
     private String picture;
     private Long chatID;
-    private OutputMessage editMessageReplyMarkup;
     private MessageType messageType;
     private List<OutputMessage> messages;
 
     // only for callback messages
     private String callbackQueryId;
     private Integer messageId;
+
+    // only for location messages
+    private double longitude;
+    private double latitude;
 
     private void init(Output output, Long chatID, Integer messageId) {
         this.type = output.getType();
@@ -30,6 +33,8 @@ public class OutputMessage {
         this.chatID = chatID;
         this.messageId = messageId;
         this.messageType = output.getMessageType();
+        this.longitude = output.getLongitude();
+        this.latitude = output.getLatitude();
     }
 
     public OutputMessage(Output output, Long chatID, Integer messageId) {
@@ -43,15 +48,6 @@ public class OutputMessage {
     public OutputMessage(Output output, Long chatID, Integer messageId, String callbackQueryId) {
         init(output, chatID, messageId);
         this.callbackQueryId = callbackQueryId;
-        
-        if (output.getEditMessageReplyMarkup() != null) {
-            this.editMessageReplyMarkup = new OutputMessage(
-                    output.getEditMessageReplyMarkup(),
-                    chatID,
-                    messageId,
-                    callbackQueryId
-            );
-        }
 
         this.messages = new ArrayList<>();
         for (Output out : output.getMessages()) {
@@ -123,14 +119,6 @@ public class OutputMessage {
         this.messageId = messageId;
     }
 
-    public OutputMessage getEditMessageReplyMarkup() {
-        return editMessageReplyMarkup;
-    }
-
-    public void setEditMessageReplyMarkup(OutputMessage editMessageReplyMarkup) {
-        this.editMessageReplyMarkup = editMessageReplyMarkup;
-    }
-
     public MessageType getMessageType() {
         return messageType;
     }
@@ -150,6 +138,22 @@ public class OutputMessage {
         this.messages = messages;
     }
 
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     @Override
     public String toString() {
         return "OutputMessage{" +
@@ -159,10 +163,12 @@ public class OutputMessage {
                 ", inlineButtons=" + inlineButtons +
                 ", picture='" + picture + '\'' +
                 ", chatID=" + chatID +
-                ", editMessageReplyMarkup=" + editMessageReplyMarkup +
                 ", messageType=" + messageType +
+                ", messages=" + messages +
                 ", callbackQueryId='" + callbackQueryId + '\'' +
                 ", messageId=" + messageId +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
                 '}';
     }
 }
