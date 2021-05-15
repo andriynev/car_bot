@@ -123,7 +123,7 @@ public class PlacesService implements Handler {
                             ResponseType.CALLBACK_ANSWER,
                             "Place info"
                     );
-                    PlaceItem deserializedValue = mapper.readValue(userInput.getMessage(), PlaceItem.class);
+                    PlaceData deserializedValue = mapper.readValue(userInput.getMessage(), PlaceData.class);
                     menuButtons = new ArrayList<>(Arrays.asList(
                             new ReplyButton("Try again"),
                             new ReplyButton("Main menu")));
@@ -133,14 +133,14 @@ public class PlacesService implements Handler {
                             new Output(
                                     new State(type, placeInfoStep),
                                     ResponseType.MESSAGE,
-                                    deserializedValue.getName(),
+                                    deserializedValue.getN(),
                                     menuButtons,
                                     null
                             ),
                             new Output(
                                     new State(type, placeInfoStep),
-                                    deserializedValue.getLocation().getLatitude(),
-                                    deserializedValue.getLocation().getLongitude()
+                                    deserializedValue.getLt(),
+                                    deserializedValue.getLg()
                             ),
                             new Output(
                                     new State(type, placeInfoStep),
@@ -197,7 +197,7 @@ public class PlacesService implements Handler {
         ObjectMapper mapper = new ObjectMapper();
         String placeJson = "";
         try {
-            placeJson = mapper.writeValueAsString(item);
+            placeJson = mapper.writeValueAsString(item.getPlaceData());
         } catch (Exception exception) {
             exception.printStackTrace();
         }

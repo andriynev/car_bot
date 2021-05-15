@@ -75,6 +75,10 @@ public class PlaceItem {
         this.openNow = openNow;
     }
 
+    public PlaceData getPlaceData() {
+        return new PlaceData(name, location.getLongitude(), location.getLatitude());
+    }
+
     @Override
     public String toString() {
         return "PlaceItem{" +
