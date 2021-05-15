@@ -125,10 +125,10 @@ public class PlacesService implements Handler {
                     );
                     PlaceData deserializedValue = mapper.readValue(userInput.getMessage(), PlaceData.class);
                     menuButtons = new ArrayList<>(Arrays.asList(
-                            new ReplyButton("Try again"),
+                            new ReplyButton(tryAgainUkr),
                             new ReplyButton("Main menu")));
                     buttons = new ArrayList<>(Collections.singletonList(
-                            new InlineButton(locationUkr + " ✅", locationUkr)));
+                            new InlineButton(locationUkr + " ✅", userInput.getMessage())));
                     output.setMessages(Arrays.asList(
                             new Output(
                                     new State(type, placeInfoStep),

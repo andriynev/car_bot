@@ -12,7 +12,7 @@ public class PlaceData {
     }
 
     public PlaceData() {
-        
+
     }
 
     public String getN() {

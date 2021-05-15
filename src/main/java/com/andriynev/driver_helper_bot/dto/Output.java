@@ -135,6 +135,13 @@ public class Output {
         this.messages = messages;
     }
 
+    public void addMessage(Output message) {
+        if (this.messages == null) {
+            this.messages = new ArrayList<>();
+        }
+        this.messages.add(message);
+    }
+
     public double getLongitude() {
         return longitude;
     }

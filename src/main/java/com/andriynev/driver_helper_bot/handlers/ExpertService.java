@@ -2,6 +2,7 @@ package com.andriynev.driver_helper_bot.handlers;
 
 import com.andriynev.driver_helper_bot.dao.CarRepairTreeRepository;
 import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.InputMessageType;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,6 +109,13 @@ public class ExpertService implements Handler {
                     ResponseType.EDIT_BUTTONS,
                     previousButtons
             )));
+            if (userInput.getType().equals(InputMessageType.CALLBACK)) {
+                out.addMessage(new Output(
+                        new State(type, initialStep),
+                        ResponseType.CALLBACK_ANSWER,
+                        "You select " + userInput.getMessage()
+                ));
+            }
             out.setRedirect(true);
             return out;
         }
