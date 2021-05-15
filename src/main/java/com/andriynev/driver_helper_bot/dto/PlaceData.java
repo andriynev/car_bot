@@ -11,6 +11,10 @@ public class PlaceData {
         lt = latitude;
     }
 
+    public PlaceData() {
+        
+    }
+
     public String getN() {
         return n;
     }
