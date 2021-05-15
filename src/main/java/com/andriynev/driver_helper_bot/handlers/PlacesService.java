@@ -30,6 +30,7 @@ public class PlacesService implements Handler {
     private final String carRepair = "car_repair";
     private final String carWashUkr = "Мийка";
     private final String carWash = "car_wash";
+    private final String tryAgainUkr = "Спробувати знову";
 
     @Override
     public Output handle(User user, State state, InputMessage userInput) {
@@ -91,7 +92,7 @@ public class PlacesService implements Handler {
                     output = new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
-                            "Your location: " + userInput.getLocation().toString(),
+                            "Places near you",
                             menuButtons,
                             null
                     );
@@ -104,30 +105,58 @@ public class PlacesService implements Handler {
                         "Sorry, please provide your location again"
                 );
             case placeInfoStep:
+                if (userInput.getMessage().equals(tryAgainUkr)) {
+                    menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
+                    output = new Output(
+                            new State(type, initialStep),
+                            ResponseType.MESSAGE,
+                            "OK",
+                            menuButtons,
+                            null);
+                    output.setRedirect(true);
+                    return output;
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     output = new Output(
-                            new State(type, initialStep),
+                            new State(type, placeInfoStep),
                             ResponseType.CALLBACK_ANSWER,
                             "Place info"
                     );
-                    Location deserializedValue = mapper.readValue(userInput.getMessage(), Location.class);
-                    output.setMessages(Collections.singletonList(new Output(
-                            new State(type, initialStep),
-                            deserializedValue.getLatitude(),
-                            deserializedValue.getLongitude()
-                    )));
-                    output.setRedirect(true);
+                    PlaceItem deserializedValue = mapper.readValue(userInput.getMessage(), PlaceItem.class);
+                    menuButtons = new ArrayList<>(Arrays.asList(
+                            new ReplyButton("Try again"),
+                            new ReplyButton("Main menu")));
+                    buttons = new ArrayList<>(Collections.singletonList(
+                            new InlineButton(locationUkr + " ✅", locationUkr)));
+                    output.setMessages(Arrays.asList(
+                            new Output(
+                                    new State(type, placeInfoStep),
+                                    ResponseType.MESSAGE,
+                                    deserializedValue.getName(),
+                                    menuButtons,
+                                    null
+                            ),
+                            new Output(
+                                    new State(type, placeInfoStep),
+                                    deserializedValue.getLocation().getLatitude(),
+                                    deserializedValue.getLocation().getLongitude()
+                            ),
+                            new Output(
+                                    new State(type, placeInfoStep),
+                                    ResponseType.EDIT_BUTTONS,
+                                    buttons
+                            )
+                    ));
                     return output;
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
                 output = new Output(
-                        new State(type, initialStep),
+                        new State(type, placeInfoStep),
                         ResponseType.MESSAGE,
-                        "User input: " +userInput.getMessage()
+                        "Sorry, try again"
                 );
-                output.setRedirect(true);
                 return output;
             default:
                 return new Output(new State(type, initialStep), ResponseType.MENU, "Please provide place type");
@@ -166,15 +195,15 @@ public class PlacesService implements Handler {
 
 
         ObjectMapper mapper = new ObjectMapper();
-        String location = "";
+        String placeJson = "";
         try {
-            location = mapper.writeValueAsString(item.getLocation());
+            placeJson = mapper.writeValueAsString(item);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
 
         List<InlineButton> buttons = new ArrayList<>(Collections.singletonList(
-                new InlineButton(locationUkr, location)
+                new InlineButton(locationUkr, placeJson)
         ));
 
         Output output = new Output(
