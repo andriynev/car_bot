@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.telegram_bot;
 import com.andriynev.driver_helper_bot.services.DispatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -156,5 +157,15 @@ public class DriverHelperBot extends TelegramWebhookBot {
             e.printStackTrace();
         }
     }
+
+    public void sendMessage(AnswerCallbackQuery message) {
+        try {
+            execute(message);
+
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

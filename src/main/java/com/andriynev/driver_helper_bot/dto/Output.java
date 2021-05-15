@@ -17,6 +17,8 @@ public class Output {
     private String message;
     private double longitude;
     private double latitude;
+    private boolean showAlert;
+
     private List<Output> messages;
 
     public Output(State state, ResponseType type, String message, List<ReplyButton> replyButtons, String picture) {
@@ -147,6 +149,14 @@ public class Output {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public boolean isShowAlert() {
+        return showAlert;
+    }
+
+    public void setShowAlert(boolean showAlert) {
+        this.showAlert = showAlert;
     }
 
     @Override

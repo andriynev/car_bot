@@ -19,6 +19,7 @@ public class OutputMessage {
     // only for callback messages
     private String callbackQueryId;
     private Integer messageId;
+    private boolean showAlert;
 
     // only for location messages
     private double longitude;
@@ -35,6 +36,7 @@ public class OutputMessage {
         this.messageType = output.getMessageType();
         this.longitude = output.getLongitude();
         this.latitude = output.getLatitude();
+        this.showAlert = output.isShowAlert();
     }
 
     public OutputMessage(Output output, Long chatID, Integer messageId) {
@@ -138,6 +140,14 @@ public class OutputMessage {
         this.messages = messages;
     }
 
+    public void addMessage(OutputMessage message) {
+        if (this.messages == null) {
+            this.messages = new ArrayList<>();
+        }
+
+        this.messages.add(message);
+    }
+
     public double getLongitude() {
         return longitude;
     }
@@ -152,6 +162,14 @@ public class OutputMessage {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public boolean isShowAlert() {
+        return showAlert;
+    }
+
+    public void setShowAlert(boolean showAlert) {
+        this.showAlert = showAlert;
     }
 
     @Override

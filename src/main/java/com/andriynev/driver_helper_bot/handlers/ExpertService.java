@@ -100,7 +100,7 @@ public class ExpertService implements Handler {
         if (selectedSubTree.getResult() != null) {
             Output out = new Output(
                     new State(type, initialStep),
-                    ResponseType.QUESTION,
+                    ResponseType.MESSAGE,
                     "\uD83D\uDC49 " + selectedSubTree.getResult()
             );
             out.setMessages(Collections.singletonList(new Output(

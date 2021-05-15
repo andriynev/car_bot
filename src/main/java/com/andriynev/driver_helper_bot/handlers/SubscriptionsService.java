@@ -32,11 +32,13 @@ public class SubscriptionsService implements Handler {
                 );
             case viewMenuStep:
                 if (!User.allSubscriptions.contains(userInput.getMessage())) {
-                    return new Output(
+                    Output output = new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
                             "You choice undefined category: " + userInput.getMessage()
                     );
+                    output.setShowAlert(true);
+                    return output;
                 }
 
 
@@ -51,6 +53,7 @@ public class SubscriptionsService implements Handler {
                             ResponseType.CALLBACK_ANSWER,
                             "You successfully subscribed to: " + userInput.getMessage() + " category"
                     );
+                    output.setShowAlert(true);
                     output.setMessages(Collections.singletonList(new Output(
                             new State(type, viewMenuStep),
                             ResponseType.EDIT_BUTTONS,
@@ -70,6 +73,7 @@ public class SubscriptionsService implements Handler {
                         "You successfully unsubscribed from: " + userInput.getMessage() + " category"
                 );
 
+                output.setShowAlert(true);
                 output.setMessages(Collections.singletonList(new Output(
                         new State(type, viewMenuStep),
                         ResponseType.EDIT_BUTTONS,

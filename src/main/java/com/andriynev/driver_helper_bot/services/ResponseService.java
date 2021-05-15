@@ -56,21 +56,33 @@ public class ResponseService {
         }
 
         for (OutputMessage mess : outputMessage.getMessages()) {
-            switch (mess.getType()){
-                case MENU:
-                case MESSAGE:
-                case QUESTION:
-                    sendSimpleMessage(mess);
-                    continue;
-                case EDIT_BUTTONS:
-                    sendEditMessage(mess);
-                    continue;
-                case LOCATION:
-                    sendLocation(mess);
+            sendAsyncMessage(mess);
+            if (mess.getMessages() != null) {
+                for (OutputMessage m : mess.getMessages()) {
+                    sendAsyncMessage(m);
+                }
             }
         }
         
         return replyToUser;
+    }
+
+    private void sendAsyncMessage(OutputMessage message) {
+        switch (message.getType()){
+            case MENU:
+            case MESSAGE:
+            case QUESTION:
+                sendSimpleMessage(message);
+                return;
+            case EDIT_BUTTONS:
+                sendEditMessage(message);
+                return;
+            case CALLBACK_ANSWER:
+                sendAnswerCallbackQuery(message);
+                return;
+            case LOCATION:
+                sendLocation(message);
+        }
     }
 
     public BotApiMethod<?> onWebhookUpdateReceived(@RequestBody Update update) {
@@ -131,23 +143,8 @@ public class ResponseService {
         return AnswerCallbackQuery.builder()
                 .callbackQueryId(outputMessage.getCallbackQueryId())
                 .text(outputMessage.getMessage())
-                .showAlert(true)
+                .showAlert(outputMessage.isShowAlert())
                 .build();
-    }
-
-    private void sendMenu(OutputMessage outputMessage) {
-        SendMessage sendMessage = initMessage(
-                outputMessage.getChatID(),
-                outputMessage.getMessage(),
-                outputMessage.getMessageType()
-        );
-
-        ArrayList<ReplyButton> button = new ArrayList<>();
-        button.add(new ReplyButton("Main menu"));
-        ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboard(button);
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-
-        driverHelperBot.sendMessage(sendMessage);
     }
 
     private void sendEditMessage(OutputMessage outputMessage) {
@@ -177,6 +174,12 @@ public class ResponseService {
         );
 
         driverHelperBot.sendMessage(sendLocation);
+    }
+
+    private void sendCallbackAnswer(OutputMessage outputMessage) {
+        AnswerCallbackQuery answer = sendAnswerCallbackQuery(outputMessage);
+
+        driverHelperBot.sendMessage(answer);
     }
 
     private ReplyKeyboardMarkup getReplyKeyboard(List<ReplyButton> replyButtons) {

@@ -47,7 +47,7 @@ public class PlacesService implements Handler {
             case requestLocationStep:
                 for (InlineButton btn: buttons) {
                     if (btn.getData().equals(userInput.getMessage())) {
-                        btn.setTitle("\uD83D\uDC49 "+btn.getTitle());
+                        btn.setTitle(btn.getTitle()+" ✅");
                     }
                 }
                 List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
@@ -106,12 +106,17 @@ public class PlacesService implements Handler {
             case placeInfoStep:
                 ObjectMapper mapper = new ObjectMapper();
                 try {
-                    Location deserializedValue = mapper.readValue(userInput.getMessage(), Location.class);
                     output = new Output(
+                            new State(type, initialStep),
+                            ResponseType.CALLBACK_ANSWER,
+                            "Place info"
+                    );
+                    Location deserializedValue = mapper.readValue(userInput.getMessage(), Location.class);
+                    output.setMessages(Collections.singletonList(new Output(
                             new State(type, initialStep),
                             deserializedValue.getLatitude(),
                             deserializedValue.getLongitude()
-                    );
+                    )));
                     output.setRedirect(true);
                     return output;
                 } catch (Exception exception) {

@@ -62,6 +62,7 @@ public class DispatcherService {
 
         State currentState = user.getState();
         boolean isNeedToChangeMenu = !currentState.getType().equals(previousState.getType());
+
         Output outSecondary = routerService.route(user, new InputMessage(inputMessage));
         OutputMessage messSecondary = new OutputMessage(outSecondary, user.getChatID(), inputMessage.getMessageId());
         user.setState(outSecondary.getState());
@@ -72,8 +73,8 @@ public class DispatcherService {
             mess.setReplyButtons(button);
         }
 
-        mess.setMessages(Collections.singletonList(messSecondary));
-        return responseService.sendMessage(mess);
+        messSecondary.addMessage(mess);
+        return responseService.sendMessage(messSecondary);
 
     }
 
