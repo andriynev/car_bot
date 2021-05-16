@@ -1,26 +1,16 @@
 package com.andriynev.driver_helper_bot.dto;
 
 public class PlaceData {
-    private String n;
     private double lt;
     private double lg;
 
-    public PlaceData(String name, double longitude, double latitude) {
-        n = name;
+    public PlaceData(double longitude, double latitude) {
         lg = longitude;
         lt = latitude;
     }
 
     public PlaceData() {
 
-    }
-
-    public String getN() {
-        return n;
-    }
-
-    public void setN(String n) {
-        this.n = n;
     }
 
     public double getLt() {
@@ -42,8 +32,7 @@ public class PlaceData {
     @Override
     public String toString() {
         return "PlaceData{" +
-                "n='" + n + '\'' +
-                ", lt=" + lt +
+                "lt=" + lt +
                 ", lg=" + lg +
                 '}';
     }

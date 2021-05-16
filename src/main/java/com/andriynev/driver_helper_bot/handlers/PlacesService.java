@@ -89,7 +89,7 @@ public class PlacesService implements Handler {
                     new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
-                            deserializedValue.getN(),
+                            "Place info",
                             menuButtons,
                             null
                     ),
@@ -117,13 +117,27 @@ public class PlacesService implements Handler {
     }
 
     private Output getGiveLocationStepOutput(User user, InputMessage userInput) {
+        if (userInput.getMessage().equals(tryAgainUkr)) {
+            List<ReplyButton> menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
+            Output output = new Output(
+                    new State(type, initialStep),
+                    ResponseType.MESSAGE,
+                    "OK",
+                    menuButtons,
+                    null);
+            output.setRedirect(true);
+            return output;
+        }
+
         if (user.getPlacesRequest() == null) {
             return getInitialStepOutput(user);
         }
 
         if (userInput.getLocation() != null) {
             List<PlaceItem> placeItems = placesApiClient.getPlacesByRequest(user.getPlacesRequest(), userInput.getLocation());
-            List<ReplyButton> menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
+            List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
+                    new ReplyButton(tryAgainUkr),
+                    new ReplyButton("Main menu")));
             if (placeItems.size() == 0) {
                 return new Output(
                         new State(type, placeInfoStep),

@@ -76,7 +76,7 @@ public class PlaceItem {
     }
 
     public PlaceData getPlaceData() {
-        return new PlaceData(name, location.getLongitude(), location.getLatitude());
+        return new PlaceData(location.getLongitude(), location.getLatitude());
     }
 
     @Override
