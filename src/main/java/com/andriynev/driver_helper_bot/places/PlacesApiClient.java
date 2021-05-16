@@ -3,6 +3,8 @@ package com.andriynev.driver_helper_bot.places;
 import com.andriynev.driver_helper_bot.dto.Location;
 import com.andriynev.driver_helper_bot.dto.PlaceItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.maps.*;
+import com.google.maps.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -30,7 +32,7 @@ public class PlacesApiClient {
 
         GeoApiContext context = new GeoApiContext.Builder().apiKey(googleApiConfig.getApiKey()).build();
         NearbySearchRequest req = PlacesApi.nearbySearchQuery(context, new LatLng(50.441301, 30.448627))
-                .rankby(RankBy.DISTANCE).type(PlaceType.CAR_REPAIR).language("uk");
+                .rankby(RankBy.DISTANCE).type(PlaceType.CAR_REPAIR).keyword("сто").language("uk");
 
 
         try {

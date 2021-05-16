@@ -104,18 +104,9 @@ public class ExpertService implements Handler {
                     ResponseType.MESSAGE,
                     "\uD83D\uDC49 " + selectedSubTree.getResult()
             );
-            out.setMessages(Collections.singletonList(new Output(
-                    new State(type, initialStep),
-                    ResponseType.EDIT_BUTTONS,
-                    previousButtons
-            )));
-            if (userInput.getType().equals(InputMessageType.CALLBACK)) {
-                out.addMessage(new Output(
-                        new State(type, initialStep),
-                        ResponseType.CALLBACK_ANSWER,
-                        "You select " + userInput.getMessage()
-                ));
-            }
+
+            List<Output> messages = getAnswerMessages(userInput, previousButtons);
+            out.setMessages(messages);
             out.setRedirect(true);
             return out;
         }
@@ -130,13 +121,28 @@ public class ExpertService implements Handler {
                 "❓ " + selectedSubTree.getQuestion(),
                 buttons
         );
-        output.setMessages(Collections.singletonList(new Output(
+
+        List<Output> messages = getAnswerMessages(userInput, previousButtons);
+        output.setMessages(messages);
+
+        return output;
+    }
+
+    private List<Output> getAnswerMessages(InputMessage userInput, List<InlineButton> previousButtons) {
+        List<Output> messages = new ArrayList<>();
+        messages.add(new Output(
                 new State(type, initialStep),
                 ResponseType.EDIT_BUTTONS,
                 previousButtons
-        )));
-
-        return output;
+        ));
+        if (userInput.getType().equals(InputMessageType.CALLBACK)) {
+            messages.add(new Output(
+                    new State(type, initialStep),
+                    ResponseType.CALLBACK_ANSWER,
+                    "You select " + userInput.getMessage()
+            ));
+        }
+        return messages;
     }
 
     @Override

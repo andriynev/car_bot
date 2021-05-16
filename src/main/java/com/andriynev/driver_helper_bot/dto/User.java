@@ -19,6 +19,8 @@ public class User {
     private State state;
     private List<String> subscriptions;
 
+    private PlacesRequest placesRequest;
+
     private String firstName;
     private String lastName;
     private String userName;
@@ -107,6 +109,17 @@ public class User {
         this.subscriptions = subscriptions;
     }
 
+    public PlacesRequest getPlacesRequest() {
+        if (placesRequest == null) {
+            return new PlacesRequest();
+        }
+        return placesRequest;
+    }
+
+    public void setPlacesRequest(PlacesRequest placesRequest) {
+        this.placesRequest = placesRequest;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -114,6 +127,7 @@ public class User {
                 ", chatID=" + chatID +
                 ", state=" + state +
                 ", subscriptions=" + subscriptions +
+                ", placesRequest=" + placesRequest +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
