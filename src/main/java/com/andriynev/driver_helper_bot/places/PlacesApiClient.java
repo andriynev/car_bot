@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Service
 public class PlacesApiClient {
     private final int defaultRadius = 2000;
-    private final int maxItems = 7;
+    private final int maxItems = 5;
     private final String defaultLanguage = "uk";
     private final GoogleApiConfig googleApiConfig;
 
