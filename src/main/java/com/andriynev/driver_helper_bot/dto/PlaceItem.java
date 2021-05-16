@@ -3,17 +3,22 @@ package com.andriynev.driver_helper_bot.dto;
 public class PlaceItem {
     private String name;
     private String address;
-    private String distance;
-    private String duration;
+    private long distance;
+    private String distanceHumanReadable;
+    private long duration;
+    private String durationHumanReadable;
     private String rating;
     private Location location;
     private boolean openNow;
 
-    public PlaceItem(String name, String address, String distance, String duration, String rating, Location location, boolean openNow) {
+
+    public PlaceItem(String name, String address, long distance, String distanceHumanReadable, long duration, String durationHumanReadable, String rating, Location location, boolean openNow) {
         this.name = name;
         this.address = address;
         this.distance = distance;
+        this.distanceHumanReadable = distanceHumanReadable;
         this.duration = duration;
+        this.durationHumanReadable = durationHumanReadable;
         this.rating = rating;
         this.location = location;
         this.openNow = openNow;
@@ -35,20 +40,20 @@ public class PlaceItem {
         this.address = address;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getDistanceHumanReadable() {
+        return distanceHumanReadable;
     }
 
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setDistanceHumanReadable(String distanceHumanReadable) {
+        this.distanceHumanReadable = distanceHumanReadable;
     }
 
-    public String getDuration() {
-        return duration;
+    public String getDurationHumanReadable() {
+        return durationHumanReadable;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public void setDurationHumanReadable(String durationHumanReadable) {
+        this.durationHumanReadable = durationHumanReadable;
     }
 
     public String getRating() {
@@ -79,13 +84,31 @@ public class PlaceItem {
         return new PlaceData(location.getLongitude(), location.getLatitude());
     }
 
+    public long getDistance() {
+        return distance;
+    }
+
+    public void setDistance(long distance) {
+        this.distance = distance;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     @Override
     public String toString() {
         return "PlaceItem{" +
                 "name='" + name + '\'' +
                 ", address='" + address + '\'' +
-                ", distance='" + distance + '\'' +
-                ", duration='" + duration + '\'' +
+                ", distance=" + distance +
+                ", distanceHumanReadable='" + distanceHumanReadable + '\'' +
+                ", duration=" + duration +
+                ", durationHumanReadable='" + durationHumanReadable + '\'' +
                 ", rating='" + rating + '\'' +
                 ", location=" + location +
                 ", openNow=" + openNow +

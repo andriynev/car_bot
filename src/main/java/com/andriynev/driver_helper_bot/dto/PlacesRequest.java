@@ -34,4 +34,13 @@ public class PlacesRequest {
     public void setOrderBy(PlaceOrderBy orderBy) {
         this.orderBy = orderBy;
     }
+
+    @Override
+    public String toString() {
+        return "PlacesRequest{" +
+                "placeType=" + placeType +
+                ", openNow=" + openNow +
+                ", orderBy=" + orderBy +
+                '}';
+    }
 }

@@ -7,34 +7,34 @@ import javax.validation.constraints.NotNull;
 public class Location {
 
     @NotNull
-    private Double longitude;
+    private double longitude;
 
     @NotNull
-    private Double latitude;
+    private double latitude;
 
     public Location() {
         this.longitude = 0.0;
         this.latitude = 0.0;
     }
 
-    public Location(Double longitude, Double latitude) {
+    public Location(double longitude, double latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 

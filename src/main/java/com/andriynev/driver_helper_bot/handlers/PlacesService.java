@@ -311,9 +311,9 @@ public class PlacesService implements Handler {
 
         String rating = item.getRating();
 
-        String distance = item.getDistance();
+        String distance = item.getDistanceHumanReadable();
 
-        String duration = item.getDuration();
+        String duration = item.getDurationHumanReadable();
 
         String caption = String.format("^bold%s^bold\n" + // bold name
                         "%s: %s, %s: %s\n" +
