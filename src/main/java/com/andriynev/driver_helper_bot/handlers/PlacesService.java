@@ -5,7 +5,9 @@ import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.enums.PlaceOrderBy;
 import com.andriynev.driver_helper_bot.enums.PlaceType;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
+import com.andriynev.driver_helper_bot.places.PlacesApiClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,6 +33,13 @@ public class PlacesService implements Handler {
     private final String durationUkr = "Час";
     private final String locationUkr = "На карті";
     private final String tryAgainUkr = "Спробувати знову";
+
+    private PlacesApiClient placesApiClient;
+
+    @Autowired
+    public PlacesService(PlacesApiClient placesApiClient) {
+        this.placesApiClient = placesApiClient;
+    }
 
     @Override
     public Output handle(User user, State state, InputMessage userInput) {
@@ -99,37 +108,38 @@ public class PlacesService implements Handler {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        Output output = new Output(
+
+        return new Output(
                 new State(type, placeInfoStep),
                 ResponseType.MESSAGE,
                 "Sorry, try again"
         );
-        return output;
     }
 
     private Output getGiveLocationStepOutput(User user, InputMessage userInput) {
+        if (user.getPlacesRequest() == null) {
+            return getInitialStepOutput(user);
+        }
+
         if (userInput.getLocation() != null) {
+            List<PlaceItem> placeItems = placesApiClient.getPlacesByRequest(user.getPlacesRequest(), userInput.getLocation());
             List<ReplyButton> menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
-            PlaceItem item = new PlaceItem(
-                    "Place name +",
-                    "вулиця Київ",
-                    "2,2 км",
-                    "5 хв",
-                    "4.1",
-                    new Location(30.44899530, 50.4476860),
-                    false
-            );
-            Output example = preparePlaceItem(new State(type, placeInfoStep), item);
-            PlaceItem item2 = new PlaceItem(
-                    "Place name 2.0 +",
-                    "вулиця Київ",
-                    "2,6 км",
-                    "8 хв",
-                    "3.4",
-                    new Location(30.64899530, 50.4486860),
-                    false
-            );
-            Output example2 = preparePlaceItem(new State(type, placeInfoStep), item2);
+            if (placeItems.size() == 0) {
+                return new Output(
+                        new State(type, placeInfoStep),
+                        ResponseType.MESSAGE,
+                        "No places found near you",
+                        menuButtons,
+                        null
+                );
+            }
+
+            List<Output> placesOutputs = new ArrayList<>();
+            for (PlaceItem place :
+                    placeItems) {
+                placesOutputs.add(preparePlaceItem(new State(type, placeInfoStep), place));
+            }
+
             Output output = new Output(
                     new State(type, placeInfoStep),
                     ResponseType.MESSAGE,
@@ -137,7 +147,8 @@ public class PlacesService implements Handler {
                     menuButtons,
                     null
             );
-            output.setMessages(Arrays.asList(example, example2));
+
+            output.setMessages(placesOutputs);
 
             return output;
         }
