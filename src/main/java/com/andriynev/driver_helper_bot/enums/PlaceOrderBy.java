@@ -16,6 +16,7 @@ public enum PlaceOrderBy {
         return localizedValue;
     }
 
+    @Override
     public String toString() {
         return this.orderBy;
     }

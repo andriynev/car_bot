@@ -17,6 +17,7 @@ public enum PlaceType {
         return this.localizedValue;
     }
 
+    @Override
     public String toString() {
         return this.placeType;
     }

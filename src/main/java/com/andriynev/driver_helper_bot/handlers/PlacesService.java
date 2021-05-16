@@ -176,7 +176,7 @@ public class PlacesService implements Handler {
         output.setMessages(Collections.singletonList(new Output(
                 new State(type, openNowStep),
                 ResponseType.EDIT_BUTTONS,
-                buttons
+                placeTypesButtons
         )));
         PlacesRequest req = user.getPlacesRequest();
         req.setPlaceType(getPlaceTypeByUserMessage(userInput.getMessage()));
