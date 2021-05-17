@@ -84,7 +84,7 @@ public class MainMenuService implements GroupHandler {
     @Override
     public void setHandlers(List<Handler> group) {
         for (Handler handler: group) {
-            menuButtons.add(new ReplyButton(handler.getType()));
+            menuButtons.add(new ReplyButton(handler.getHumanReadableName()));
             handlers.add(handler);
         }
     }
