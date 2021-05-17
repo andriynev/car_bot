@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.services;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.telegram_bot.DriverHelperBot;
@@ -27,16 +28,16 @@ import java.util.regex.Pattern;
 
 @Service
 public class ResponseService {
-    private final String detailsUkr = "Деталі";
-    private final String categoryUkr = "Категорія";
     private final String markdownV2MessageType = "MarkdownV2";
     DriverHelperBot driverHelperBot;
     private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([.+\\-!=>()#_*\\[\\]~`|{}]{1,1})");
+    private final MessagesProperties messagesProperties;
 
     @Lazy
     @Autowired
-    public ResponseService(DriverHelperBot driverHelperBot) {
+    public ResponseService(DriverHelperBot driverHelperBot, MessagesProperties messagesProperties) {
         this.driverHelperBot = driverHelperBot;
+        this.messagesProperties = messagesProperties;
     }
 
     public BotApiMethod<?> sendMessage(OutputMessage outputMessage) {
@@ -111,8 +112,8 @@ public class ResponseService {
                 "\uD83D\uDC49 [%s](%s)",
                 title,
                 text,
-                categoryUkr, item.getCategory(),
-                detailsUkr, item.getOriginLink());
+                this.messagesProperties.getMessage("category"), item.getCategory(),
+                this.messagesProperties.getMessage("details"), item.getOriginLink());
 
         SendPhoto sendPhoto = SendPhoto.builder()
                 .chatId(chatID.toString())

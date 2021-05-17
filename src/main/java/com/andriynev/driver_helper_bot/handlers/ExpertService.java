@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.handlers;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dao.CarRepairTreeRepository;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.InputMessageType;
@@ -14,15 +15,21 @@ public class ExpertService implements Handler {
 
     private final CarRepairTreeRepository carRepairTreeRepository;
     private static final int maxDepth = 50;
-    private static final String defaultMessage = "Take your car to a mechanic";
     private static final String initialStep = "initial";
+    private final static String type = "Expert";
+    private final static String nameMessageKey = "expert-system";
+    private final static String defaultMessageKey = "take-your-car-to-a-mechanic";
+    private String defaultMessage;
+    private String humanReadableName = type;
+    private final MessagesProperties messagesProperties;
 
     @Autowired
-    public ExpertService(CarRepairTreeRepository carRepairTreeRepository) {
+    public ExpertService(CarRepairTreeRepository carRepairTreeRepository, MessagesProperties messagesProperties) {
         this.carRepairTreeRepository = carRepairTreeRepository;
+        this.messagesProperties = messagesProperties;
+        this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
+        this.defaultMessage = this.messagesProperties.getMessage(defaultMessageKey);
     }
-
-    private final static String type = "Expert";
 
     @Override
     public Output handle(User user, State state, InputMessage userInput) {
@@ -139,7 +146,7 @@ public class ExpertService implements Handler {
             messages.add(new Output(
                     new State(type, initialStep),
                     ResponseType.CALLBACK_ANSWER,
-                    "You select " + userInput.getMessage()
+                    this.messagesProperties.getMessage("you-select")+ " " + userInput.getMessage()
             ));
         }
         return messages;
@@ -148,6 +155,20 @@ public class ExpertService implements Handler {
     @Override
     public String getType() {
         return type;
+    }
+
+    @Override
+    public String getHumanReadableName() {
+        return humanReadableName;
+    }
+
+    @Override
+    public void setHumanReadableName(String name) {
+        if (name == null || name.isEmpty()) {
+            return;
+        }
+
+        humanReadableName = name;
     }
 
     private Optional<CarRepairTree> findByState(CarRepairTree tree, State state) {

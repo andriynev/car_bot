@@ -1,19 +1,13 @@
 package com.andriynev.driver_helper_bot.enums;
 
 public enum PlaceOrderBy {
-    DISTANCE("distance", "Відстань"),
-    RATING("rating", "Рейтинг");
+    DISTANCE("distance"),
+    RATING("rating");
 
     private final String orderBy;
-    private final String localizedValue;
 
-    PlaceOrderBy(String orderBy, String localizedValue) {
+    PlaceOrderBy(String orderBy) {
         this.orderBy = orderBy;
-        this.localizedValue = localizedValue;
-    }
-
-    public String getLocalizedValue() {
-        return localizedValue;
     }
 
     @Override

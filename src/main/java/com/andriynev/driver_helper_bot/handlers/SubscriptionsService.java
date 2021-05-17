@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.handlers;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,29 @@ import java.util.List;
 @Service
 public class SubscriptionsService implements Handler {
     private final static String type = "Subscriptions";
+    private String humanReadableName = type;
+    private final static String nameMessageKey = "subscriptions";
     private static final String initialStep = "initial";
     private final static String viewMenuStep = "view_menu";
+    private final MessagesProperties messagesProperties;
 
     @Autowired
-    public SubscriptionsService() {
+    public SubscriptionsService(MessagesProperties messagesProperties) {
+        this.messagesProperties = messagesProperties;
+        this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
+    }
+
+    @Override
+    public String getHumanReadableName() {
+        return humanReadableName;
+    }
+
+    @Override
+    public void setHumanReadableName(String humanReadableName) {
+        if (humanReadableName == null || humanReadableName.isEmpty()) {
+            return;
+        }
+        this.humanReadableName = humanReadableName;
     }
 
     @Override
@@ -27,7 +46,7 @@ public class SubscriptionsService implements Handler {
                 return new Output(
                         new State(type, viewMenuStep),
                         ResponseType.QUESTION,
-                        "Categories",
+                        this.messagesProperties.getMessage("categories"),
                         buttons
                 );
             case viewMenuStep:
@@ -35,7 +54,7 @@ public class SubscriptionsService implements Handler {
                     Output output = new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
-                            "You choice undefined category: " + userInput.getMessage()
+                            this.messagesProperties.getMessage("you-choice-undefined-category") +": " + userInput.getMessage()
                     );
                     output.setShowAlert(true);
                     return output;
@@ -51,7 +70,9 @@ public class SubscriptionsService implements Handler {
                     Output output =  new Output(
                             new State(type, viewMenuStep),
                             ResponseType.CALLBACK_ANSWER,
-                            "You successfully subscribed to: " + userInput.getMessage() + " category"
+                            this.messagesProperties.getMessage("you-successfully-subscribed-to-category") +
+                                    ": " +
+                                    this.messagesProperties.getMessage(userInput.getMessage())
                     );
                     output.setShowAlert(true);
                     output.setMessages(Collections.singletonList(new Output(
@@ -70,7 +91,9 @@ public class SubscriptionsService implements Handler {
                 Output output = new Output(
                         new State(type, viewMenuStep),
                         ResponseType.CALLBACK_ANSWER,
-                        "You successfully unsubscribed from: " + userInput.getMessage() + " category"
+                        this.messagesProperties.getMessage("you-successfully-unsubscribed-from-category") +
+                                ": " +
+                                this.messagesProperties.getMessage(userInput.getMessage())
                 );
 
                 output.setShowAlert(true);
@@ -88,7 +111,7 @@ public class SubscriptionsService implements Handler {
         return new Output(
                 new State(type, viewMenuStep),
                 ResponseType.QUESTION,
-                "Categories",
+                this.messagesProperties.getMessage("categories"),
                 buttons
         );
     }
@@ -97,9 +120,9 @@ public class SubscriptionsService implements Handler {
         List<InlineButton> buttons = new ArrayList<>();
         for (String subscription: User.allSubscriptions) {
             if (userSubscriptions.contains(subscription)) {
-                buttons.add(new InlineButton(subscription + " \uD83D\uDD14", subscription));
+                buttons.add(new InlineButton(this.messagesProperties.getMessage(subscription) + " \uD83D\uDD14", subscription));
             } else {
-                buttons.add(new InlineButton(subscription));
+                buttons.add(new InlineButton(this.messagesProperties.getMessage(subscription), subscription));
             }
         }
         return buttons;

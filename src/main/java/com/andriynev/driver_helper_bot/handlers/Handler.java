@@ -7,5 +7,7 @@ import org.springframework.stereotype.Service;
 public interface Handler {
     public Output handle(User user, State state, InputMessage userInput);
     public String getType();
+    public String getHumanReadableName();
+    public void setHumanReadableName(String name);
 }
 

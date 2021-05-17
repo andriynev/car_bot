@@ -1,20 +1,14 @@
 package com.andriynev.driver_helper_bot.enums;
 
 public enum PlaceType {
-    CAR_REPAIR("car_repair", "СТО"),
-    CAR_WASH("car_wash", "Мийка"),
-    GAS_STATION("gas_station", "АЗС");
+    CAR_REPAIR("car-repair"),
+    CAR_WASH("car-wash"),
+    GAS_STATION("gas-station");
 
     private final String placeType;
-    private final String localizedValue;
 
-    private PlaceType(String placeType, String localizedValue) {
+    private PlaceType(String placeType) {
         this.placeType = placeType;
-        this.localizedValue = localizedValue;
-    }
-
-    public String getLocalizedValue() {
-        return this.localizedValue;
     }
 
     @Override

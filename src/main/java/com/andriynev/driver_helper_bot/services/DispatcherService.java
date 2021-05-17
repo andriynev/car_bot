@@ -1,6 +1,7 @@
 package com.andriynev.driver_helper_bot.services;
 
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.InputMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,8 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 @Service
@@ -21,12 +20,14 @@ public class DispatcherService {
     private final UserService userService;
     private final RouterService routerService;
     private final ResponseService responseService;
+    private final MessagesProperties messagesProperties;
 
     @Autowired
-    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService) {
+    public DispatcherService(UserService userService, RouterService routerService, ResponseService responseService, MessagesProperties messagesProperties) {
         this.userService = userService;
         this.routerService = routerService;
         this.responseService = responseService;
+        this.messagesProperties = messagesProperties;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
@@ -69,7 +70,7 @@ public class DispatcherService {
         userService.save(user);
         if (isNeedToChangeMenu) {
             ArrayList<ReplyButton> button = new ArrayList<>();
-            button.add(new ReplyButton("Main menu"));
+            button.add(new ReplyButton(this.messagesProperties.getMessage("main-menu")));
             mess.setReplyButtons(button);
         }
 

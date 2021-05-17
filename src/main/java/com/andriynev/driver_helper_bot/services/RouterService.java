@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.services;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.handlers.GroupHandler;
@@ -12,9 +13,11 @@ import java.util.*;
 @Service
 public class RouterService {
     private final Map<String, Handler> handlers = new HashMap<>();
+    private final MessagesProperties messagesProperties;
+
 
     @Autowired
-    public RouterService(Handler expertService, Handler placesService, Handler subscriptionsService, GroupHandler mainMenuService) {
+    public RouterService(Handler expertService, Handler placesService, Handler subscriptionsService, GroupHandler mainMenuService, MessagesProperties messagesProperties) {
         handlers.put(expertService.getType(), expertService);
         handlers.put(placesService.getType(), placesService);
         handlers.put(subscriptionsService.getType(), subscriptionsService);
@@ -22,10 +25,11 @@ public class RouterService {
         List<Handler> group = new ArrayList<>(Arrays.asList(expertService, placesService, subscriptionsService));
         mainMenuService.setHandlers(group);
         handlers.put(mainMenuService.getType(), mainMenuService);
-
+        this.messagesProperties = messagesProperties;
     }
 
     public Output route(User user, InputMessage inputMessage) {
+        String mainMenuLocalized = this.messagesProperties.getMessage("main-menu");
         String message = inputMessage.getMessage();
         State newState;
         switch (message) {
@@ -42,6 +46,10 @@ public class RouterService {
                 );
 
             default:
+                if (message.equals(mainMenuLocalized)) {
+                    newState = UserService.initialState;
+                    break;
+                }
                 newState = user.getState();
                 if (!handlers.containsKey(newState.getType())) {
                     newState = UserService.initialState;

@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.handlers;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.enums.PlaceOrderBy;
@@ -18,27 +19,23 @@ import java.util.List;
 @Service
 public class PlacesService implements Handler {
     private final static String type = "Places";
+    private final static String nameMessageKey = "places-nearby";
+    private String humanReadableName = type;
     private final static String initialStep = "initial";
     private final static String placeTypeStep = "place_type";
     private final static String openNowStep = "open_now";
     private final static String orderByStep = "order_by";
     private final static String giveLocationStep = "give_location";
     private final static String placeInfoStep = "place_info";
-
-    // localization constants
-    private final String openNowUkr = "Відкрито зараз";
-    private final String addressUkr = "Адреса";
-    private final String ratingUkr = "Рейтинг";
-    private final String distanceUkr = "Відстань";
-    private final String durationUkr = "Час";
-    private final String locationUkr = "На карті";
-    private final String tryAgainUkr = "Спробувати знову";
+    private final MessagesProperties messagesProperties;
 
     private PlacesApiClient placesApiClient;
 
     @Autowired
-    public PlacesService(PlacesApiClient placesApiClient) {
+    public PlacesService(PlacesApiClient placesApiClient, MessagesProperties messagesProperties) {
         this.placesApiClient = placesApiClient;
+        this.messagesProperties = messagesProperties;
+        this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
     }
 
     @Override
@@ -60,36 +57,46 @@ public class PlacesService implements Handler {
         }
     }
 
-    private Output getPlaceInfoStepOutput(InputMessage userInput) {
-        if (userInput.getMessage().equals(tryAgainUkr)) {
-            List<ReplyButton> menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
-            Output output = new Output(
-                    new State(type, initialStep),
-                    ResponseType.MESSAGE,
-                    "OK",
-                    menuButtons,
-                    null);
-            output.setRedirect(true);
-            return output;
+    @Override
+    public String getHumanReadableName() {
+        return humanReadableName;
+    }
+
+    @Override
+    public void setHumanReadableName(String humanReadableName) {
+        if (humanReadableName == null || humanReadableName.isEmpty()) {
+            return;
         }
+        this.humanReadableName = humanReadableName;
+    }
+
+    private Output getPlaceInfoStepOutput(InputMessage userInput) {
+        Output tryAgainOutput = handleTryAgain(userInput);
+        if (tryAgainOutput != null) return tryAgainOutput;
+
         ObjectMapper mapper = new ObjectMapper();
         try {
             Output output = new Output(
                     new State(type, placeInfoStep),
                     ResponseType.CALLBACK_ANSWER,
-                    "Place info"
+                    this.messagesProperties.getMessage("on-map")
             );
             PlaceData deserializedValue = mapper.readValue(userInput.getMessage(), PlaceData.class);
             List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
-                    new ReplyButton(tryAgainUkr),
-                    new ReplyButton("Main menu")));
+                    new ReplyButton(this.messagesProperties.getMessage("try-again")),
+                    new ReplyButton(this.messagesProperties.getMessage("main-menu"))
+            ));
             List<InlineButton> buttons = new ArrayList<>(Collections.singletonList(
-                    new InlineButton(locationUkr + " ✅", userInput.getMessage())));
+                    new InlineButton(
+                            this.messagesProperties.getMessage("on-map") + " \uD83D\uDC47",
+                            userInput.getMessage()
+                    )
+            ));
             output.setMessages(Arrays.asList(
                     new Output(
                             new State(type, placeInfoStep),
                             ResponseType.MESSAGE,
-                            "Place info",
+                            this.messagesProperties.getMessage("on-map"),
                             menuButtons,
                             null
                     ),
@@ -112,13 +119,15 @@ public class PlacesService implements Handler {
         return new Output(
                 new State(type, placeInfoStep),
                 ResponseType.MESSAGE,
-                "Sorry, try again"
+                this.messagesProperties.getMessage("sorry-try-again")
         );
     }
 
-    private Output getGiveLocationStepOutput(User user, InputMessage userInput) {
-        if (userInput.getMessage().equals(tryAgainUkr)) {
-            List<ReplyButton> menuButtons = new ArrayList<>(Collections.singletonList(new ReplyButton("Main menu")));
+    private Output handleTryAgain(InputMessage userInput) {
+        if (userInput.getMessage().equals(this.messagesProperties.getMessage("try-again"))) {
+            List<ReplyButton> menuButtons = new ArrayList<>(
+                    Collections.singletonList(new ReplyButton(this.messagesProperties.getMessage("main-menu")))
+            );
             Output output = new Output(
                     new State(type, initialStep),
                     ResponseType.MESSAGE,
@@ -128,6 +137,12 @@ public class PlacesService implements Handler {
             output.setRedirect(true);
             return output;
         }
+        return null;
+    }
+
+    private Output getGiveLocationStepOutput(User user, InputMessage userInput) {
+        Output tryAgainOutput = handleTryAgain(userInput);
+        if (tryAgainOutput != null) return tryAgainOutput;
 
         if (user.getPlacesRequest() == null) {
             return getInitialStepOutput(user);
@@ -136,13 +151,13 @@ public class PlacesService implements Handler {
         if (userInput.getLocation() != null) {
             List<PlaceItem> placeItems = placesApiClient.getPlacesByRequest(user.getPlacesRequest(), userInput.getLocation());
             List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
-                    new ReplyButton(tryAgainUkr),
-                    new ReplyButton("Main menu")));
+                    new ReplyButton(this.messagesProperties.getMessage("try-again")),
+                    new ReplyButton(this.messagesProperties.getMessage("main-menu"))));
             if (placeItems.size() == 0) {
                 return new Output(
                         new State(type, placeInfoStep),
                         ResponseType.MESSAGE,
-                        "No places found near you",
+                        this.messagesProperties.getMessage("no-places-found-near-you"),
                         menuButtons,
                         null
                 );
@@ -157,7 +172,7 @@ public class PlacesService implements Handler {
             Output output = new Output(
                     new State(type, placeInfoStep),
                     ResponseType.MESSAGE,
-                    "Places near you",
+                    this.messagesProperties.getMessage("places-near-you"),
                     menuButtons,
                     null
             );
@@ -169,7 +184,7 @@ public class PlacesService implements Handler {
         return new Output(
                 new State(type, giveLocationStep),
                 ResponseType.QUESTION,
-                "Sorry, please provide your location again"
+                this.messagesProperties.getMessage("sorry-please-provide-your-location-again")
         );
     }
 
@@ -188,7 +203,7 @@ public class PlacesService implements Handler {
             return new Output(
                     new State(type, placeTypeStep),
                     ResponseType.QUESTION,
-                    "Please provide place type",
+                    this.messagesProperties.getMessage("please-provide-place-type"),
                     placeTypesButtons);
         }
 
@@ -196,7 +211,7 @@ public class PlacesService implements Handler {
         Output output = new Output(
                 new State(type, openNowStep),
                 ResponseType.QUESTION,
-                "Open now",
+                this.messagesProperties.getMessage("open-now"),
                 buttons);
         output.setMessages(Collections.singletonList(new Output(
                 new State(type, openNowStep),
@@ -224,7 +239,7 @@ public class PlacesService implements Handler {
             return new Output(
                     new State(type, openNowStep),
                     ResponseType.QUESTION,
-                    "Open now",
+                    this.messagesProperties.getMessage("open-now"),
                     openNowButtons);
         }
 
@@ -232,7 +247,7 @@ public class PlacesService implements Handler {
         Output output = new Output(
                 new State(type, orderByStep),
                 ResponseType.QUESTION,
-                "Order by",
+                this.messagesProperties.getMessage("order-by"),
                 buttons);
         output.setMessages(Collections.singletonList(new Output(
                 new State(type, orderByStep),
@@ -240,7 +255,7 @@ public class PlacesService implements Handler {
                 openNowButtons
         )));
         PlacesRequest req = user.getPlacesRequest();
-        req.setOpenNow(userInput.getMessage().equals("Yes"));
+        req.setOpenNow(userInput.getMessage().equals("yes"));
         user.setPlacesRequest(req);
         return output;
     }
@@ -260,17 +275,17 @@ public class PlacesService implements Handler {
             return new Output(
                     new State(type, orderByStep),
                     ResponseType.QUESTION,
-                    "Order by",
+                    this.messagesProperties.getMessage("order-by"),
                     orderByButtons);
         }
 
         List<ReplyButton> menuButtons = new ArrayList<>(Arrays.asList(
-                new ReplyButton("Give location", true),
-                new ReplyButton("Main menu")));
+                new ReplyButton(this.messagesProperties.getMessage("give-location"), true),
+                new ReplyButton(this.messagesProperties.getMessage("main-menu"))));
         Output output = new Output(
                 new State(type, giveLocationStep),
                 ResponseType.MENU,
-                "Please provide your location",
+                this.messagesProperties.getMessage("please-provide-your-location"),
                 menuButtons,
                 null);
         output.setMessages(Collections.singletonList(new Output(
@@ -291,7 +306,7 @@ public class PlacesService implements Handler {
         return new Output(
                 new State(type, placeTypeStep),
                 ResponseType.QUESTION,
-                "Please provide place type",
+                this.messagesProperties.getMessage("please-provide-place-type"),
                 buttons);
     }
 
@@ -319,8 +334,8 @@ public class PlacesService implements Handler {
                         "%s: %s, %s: %s\n" +
                         "%s: %s, %s: %s",
                 name, address,
-                openNowUkr, openNow, ratingUkr, rating,
-                distanceUkr, distance, durationUkr, duration);
+                this.messagesProperties.getMessage("open-now"), openNow, this.messagesProperties.getMessage("rating"), rating,
+                this.messagesProperties.getMessage("distance"), distance, this.messagesProperties.getMessage("duration"), duration);
 
 
         ObjectMapper mapper = new ObjectMapper();
@@ -332,7 +347,9 @@ public class PlacesService implements Handler {
         }
 
         List<InlineButton> buttons = new ArrayList<>(Collections.singletonList(
-                new InlineButton(locationUkr, placeJson)
+                new InlineButton(
+                        this.messagesProperties.getMessage("on-map"), placeJson
+                )
         ));
 
         Output output = new Output(
@@ -350,19 +367,22 @@ public class PlacesService implements Handler {
     private List<InlineButton> getPlaceTypesButtons() {
         List<InlineButton> buttons = new ArrayList<>();
         for (PlaceType type : PlaceType.values()) {
-            buttons.add(new InlineButton(type.getLocalizedValue(), type.toString()));
+            buttons.add(new InlineButton(this.messagesProperties.getMessage(type.toString()), type.toString()));
         }
         return buttons;
     }
 
     private List<InlineButton> getOpenNowButtons() {
-        return new ArrayList<>(Arrays.asList(new InlineButton("Yes"), new InlineButton("No")));
+        return new ArrayList<>(Arrays.asList(
+                new InlineButton(this.messagesProperties.getMessage("yes"), "yes"),
+                new InlineButton(this.messagesProperties.getMessage("does-not-matter"), "does-not-matter")
+        ));
     }
 
     private List<InlineButton> getOrderByButtons() {
         List<InlineButton> buttons = new ArrayList<>();
         for (PlaceOrderBy orderBy : PlaceOrderBy.values()) {
-            buttons.add(new InlineButton(orderBy.getLocalizedValue(), orderBy.toString()));
+            buttons.add(new InlineButton(this.messagesProperties.getMessage(orderBy.toString()), orderBy.toString()));
         }
         return buttons;
     }

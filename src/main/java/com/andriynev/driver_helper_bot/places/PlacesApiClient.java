@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.places;
 
+import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.Location;
 import com.andriynev.driver_helper_bot.dto.PlaceItem;
 import com.andriynev.driver_helper_bot.dto.PlacesRequest;
@@ -20,10 +21,12 @@ public class PlacesApiClient {
     private final int maxItems = 5;
     private final String defaultLanguage = "uk";
     private final GoogleApiConfig googleApiConfig;
+    private final MessagesProperties messagesProperties;
 
     @Autowired
-    public PlacesApiClient(GoogleApiConfig googleApiConfig) {
+    public PlacesApiClient(GoogleApiConfig googleApiConfig, MessagesProperties messagesProperties) {
         this.googleApiConfig = googleApiConfig;
+        this.messagesProperties = messagesProperties;
     }
 
     public List<PlaceItem> getPlacesByRequest(PlacesRequest request, Location location) {
@@ -58,13 +61,13 @@ public class PlacesApiClient {
 
         switch (request.getPlaceType()) {
             case CAR_REPAIR:
-                req.type(PlaceType.CAR_REPAIR).keyword(request.getPlaceType().getLocalizedValue());
+                req.type(PlaceType.CAR_REPAIR).keyword(this.messagesProperties.getMessage(request.getPlaceType().toString()));
                 break;
             case CAR_WASH:
-                req.type(PlaceType.CAR_WASH).keyword(request.getPlaceType().getLocalizedValue());
+                req.type(PlaceType.CAR_WASH).keyword(this.messagesProperties.getMessage(request.getPlaceType().toString()));
                 break;
             case GAS_STATION:
-                req.type(PlaceType.GAS_STATION).keyword(request.getPlaceType().getLocalizedValue());
+                req.type(PlaceType.GAS_STATION).keyword(this.messagesProperties.getMessage(request.getPlaceType().toString()));
                 break;
         }
 
