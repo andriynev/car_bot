@@ -112,7 +112,7 @@ public class ResponseService {
                 "\uD83D\uDC49 [%s](%s)",
                 title,
                 text,
-                this.messagesProperties.getMessage("category"), item.getCategory(),
+                this.messagesProperties.getMessage("category"), this.messagesProperties.getMessage(item.getCategory()),
                 this.messagesProperties.getMessage("details"), item.getOriginLink());
 
         SendPhoto sendPhoto = SendPhoto.builder()
