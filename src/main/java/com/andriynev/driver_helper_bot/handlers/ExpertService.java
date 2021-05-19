@@ -15,6 +15,8 @@ public class ExpertService implements Handler {
 
     private final CarRepairTreeRepository carRepairTreeRepository;
     private static final int maxDepth = 50;
+    private static final String defaultLanguage = "en";
+    private static final String UKLanguage = "uk";
     private static final String initialStep = "initial";
     private final static String type = "Expert";
     private final static String nameMessageKey = "expert-system";
@@ -83,8 +85,17 @@ public class ExpertService implements Handler {
 
         if (!subTree.get().getOutcomes().containsKey(userInput.getMessage())) {
             List<InlineButton> buttons = new ArrayList<>();
-            for (String answer: subTree.get().getAnswers()) {
-                buttons.add(new InlineButton(answer));
+            for (Map.Entry<String, Map<String, String>> answer: subTree.get().getAnswers().entrySet()) {
+                String answerValue = "";
+                if (answer.getValue().containsKey(UKLanguage)) {
+                    answerValue = answer.getValue().get(UKLanguage);
+                }
+
+                if (answerValue.isEmpty()) {
+                    answerValue = answer.getKey();
+                }
+
+                buttons.add(new InlineButton(answerValue, answer.getKey()));
             }
             return new Output(
                     new State(type, subTree.get().getStep()),
@@ -95,21 +106,38 @@ public class ExpertService implements Handler {
         }
 
         List<InlineButton> previousButtons = new ArrayList<>();
-        for (String answer: subTree.get().getAnswers()) {
-            if (userInput.getMessage().equals(answer)) {
-                previousButtons.add(new InlineButton(answer + " ✅", answer));
+        for (Map.Entry<String, Map<String, String>> answer: subTree.get().getAnswers().entrySet()) {
+            String answerValue = "";
+            if (answer.getValue().containsKey(UKLanguage)) {
+                answerValue = answer.getValue().get(UKLanguage);
+            }
+
+            if (answerValue.isEmpty()) {
+                answerValue = answer.getKey();
+            }
+
+            if (userInput.getMessage().equals(answer.getKey())) {
+                previousButtons.add(new InlineButton(answerValue + " ✅", answer.getKey()));
                 continue;
             }
 
-            previousButtons.add(new InlineButton(answer));
+            previousButtons.add(new InlineButton(answerValue, answer.getKey()));
         }
 
         CarRepairTree selectedSubTree = subTree.get().getOutcomes().get(userInput.getMessage());
         if (selectedSubTree.getResult() != null) {
+            String result = "";
+            if (selectedSubTree.getResult().containsKey(UKLanguage)) {
+                result = selectedSubTree.getResult().get(UKLanguage);
+            }
+
+            if (selectedSubTree.getResult().isEmpty()) {
+                result = selectedSubTree.getResult().get(defaultLanguage);
+            }
             Output out = new Output(
                     new State(type, initialStep),
                     ResponseType.MESSAGE,
-                    "\uD83D\uDC49 " + selectedSubTree.getResult()
+                    "\uD83D\uDC49 " + result
             );
 
             List<Output> messages = getAnswerMessages(userInput, previousButtons);
@@ -119,13 +147,31 @@ public class ExpertService implements Handler {
         }
 
         List<InlineButton> buttons = new ArrayList<>();
-        for (String answer: selectedSubTree.getAnswers()) {
-            buttons.add(new InlineButton(answer));
+        for (Map.Entry<String, Map<String, String>> answer: selectedSubTree.getAnswers().entrySet()) {
+            String answerValue = "";
+            if (answer.getValue().containsKey(UKLanguage)) {
+                answerValue = answer.getValue().get(UKLanguage);
+            }
+
+            if (answerValue.isEmpty()) {
+                answerValue = answer.getValue().get(defaultLanguage);
+            }
+
+            buttons.add(new InlineButton(answerValue, answer.getKey()));
+        }
+
+        String question = "";
+        if (selectedSubTree.getQuestion().containsKey(UKLanguage)) {
+            question = selectedSubTree.getQuestion().get(UKLanguage);
+        }
+
+        if (selectedSubTree.getQuestion().isEmpty()) {
+            question = selectedSubTree.getQuestion().get(defaultLanguage);
         }
         Output output = new Output(
                 new State(type, selectedSubTree.getStep()),
                 ResponseType.QUESTION,
-                "❓ " + selectedSubTree.getQuestion(),
+                "❓ " + question,
                 buttons
         );
 
@@ -146,7 +192,7 @@ public class ExpertService implements Handler {
             messages.add(new Output(
                     new State(type, initialStep),
                     ResponseType.CALLBACK_ANSWER,
-                    this.messagesProperties.getMessage("you-select")+ " " + userInput.getMessage()
+                    this.messagesProperties.getMessage("you-select")
             ));
         }
         return messages;
@@ -223,7 +269,7 @@ public class ExpertService implements Handler {
         }
 
         // validate answers
-        for (String answer: tree.getAnswers()) {
+        for (String answer: tree.getAnswers().keySet()) {
             if (!tree.getOutcomes().containsKey(answer)) {
                 throw new IllegalArgumentException("Answer not present in outcomes");
             }
@@ -232,7 +278,7 @@ public class ExpertService implements Handler {
         // validate outcomes
         for (Map.Entry<String, CarRepairTree> entry : tree.getOutcomes().entrySet()) {
             boolean found = false;
-            for (String answer: tree.getAnswers()) {
+            for (String answer: tree.getAnswers().keySet()) {
                 if (answer.equals(entry.getKey())) {
                     found = true;
                     break;

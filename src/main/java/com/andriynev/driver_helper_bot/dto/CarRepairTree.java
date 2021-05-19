@@ -14,12 +14,12 @@ public class CarRepairTree {
     @NotNull
     private String step;
     @NotNull
-    private String question;
+    private Map<String, String> question;
     @NotNull
-    private List<String> answers;
+    private Map<String, Map<String, String>> answers;
 
     private Map<String, CarRepairTree> outcomes;
-    private String result;
+    private Map<String, String> result;
 
     public CarRepairTree() {
 
@@ -29,47 +29,47 @@ public class CarRepairTree {
         return id;
     }
 
-    public String getStep() {
-        return step;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public List<String> getAnswers() {
-        return answers;
-    }
-
-    public Map<String, CarRepairTree> getOutcomes() {
-        return outcomes;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getStep() {
+        return step;
     }
 
     public void setStep(String step) {
         this.step = step;
     }
 
-    public void setQuestion(String question) {
+    public Map<String, String> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Map<String, String> question) {
         this.question = question;
     }
 
-    public void setAnswers(List<String> answers) {
+    public Map<String, Map<String, String>> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Map<String, Map<String, String>> answers) {
         this.answers = answers;
+    }
+
+    public Map<String, CarRepairTree> getOutcomes() {
+        return outcomes;
     }
 
     public void setOutcomes(Map<String, CarRepairTree> outcomes) {
         this.outcomes = outcomes;
     }
 
-    public void setResult(String result) {
+    public Map<String, String> getResult() {
+        return result;
+    }
+
+    public void setResult(Map<String, String> result) {
         this.result = result;
     }
 
