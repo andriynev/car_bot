@@ -2,12 +2,19 @@ package com.andriynev.driver_helper_bot.telegram_bot;
 
 import com.andriynev.driver_helper_bot.services.DispatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
 public class BotConfig {
+    @Value("${telegrambot.botToken}")
+    private String botToken;
+
+    public String getBotToken() {
+        return botToken;
+    }
 
     @Bean
     @Autowired

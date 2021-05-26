@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
@@ -19,19 +20,24 @@ public class User {
     private State state;
     private List<String> subscriptions;
 
+    @JsonIgnore
     private PlacesRequest placesRequest;
 
     private String firstName;
     private String lastName;
     private String userName;
 
+    private boolean enabled;
+
     public User() {
+        this.enabled = true;
     }
 
     public User(Long chatID, State state, List<String> subscriptions) {
         this.chatID = chatID;
         this.state = state;
         this.subscriptions = subscriptions;
+        this.enabled = true;
     }
 
     public User(Long chatID, State state, List<String> subscriptions, String firstName, String lastName, String userName) {
@@ -120,6 +126,14 @@ public class User {
         this.placesRequest = placesRequest;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -131,6 +145,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
+                ", enabled=" + enabled +
                 '}';
     }
 }
