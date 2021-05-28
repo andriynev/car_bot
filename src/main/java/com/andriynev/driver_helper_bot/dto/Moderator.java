@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;
@@ -105,7 +106,12 @@ public class Moderator implements UserDetails {
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : this.getPermissions()) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
+        }
+
+        return authorities;
     }
 
     @JsonIgnore

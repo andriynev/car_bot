@@ -4,7 +4,6 @@ import com.andriynev.driver_helper_bot.dao.ModeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -43,6 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Set unauthorized requests exception handler
         http = http
                 .exceptionHandling()
+                .accessDeniedHandler((request, response, ex) -> {
+                    response.sendError(
+                            HttpServletResponse.SC_FORBIDDEN,
+                            ex.getMessage()
+                    );
+                })
                 .authenticationEntryPoint(
                         (request, response, ex) -> {
                             response.sendError(
@@ -52,6 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         }
                 )
                 .and();
+
+
 
         // Set permissions on endpoints
         http.authorizeRequests()

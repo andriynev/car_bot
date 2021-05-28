@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.services;
 import com.andriynev.driver_helper_bot.dao.UserRepository;
 import com.andriynev.driver_helper_bot.dto.State;
 import com.andriynev.driver_helper_bot.dto.User;
+import com.andriynev.driver_helper_bot.dto.UserUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -50,6 +51,16 @@ public class UserService {
 
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    public User partialUpdate(String id, UserUpdateRequest request) {
+        Optional<User> user = userRepository.findUserById(id);
+        if (!user.isPresent()) {
+            throw new IllegalArgumentException("User not found: " + id);
+        }
+
+        user.get().setEnabled(request.isEnabled());
+        return userRepository.save(user.get());
     }
 
     public User save(User user) {

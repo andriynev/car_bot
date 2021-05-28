@@ -1,9 +1,7 @@
 package com.andriynev.driver_helper_bot.controller;
 
 
-import com.andriynev.driver_helper_bot.dto.JwtAuthRequest;
-import com.andriynev.driver_helper_bot.dto.JwtTokenResponse;
-import com.andriynev.driver_helper_bot.dto.User;
+import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.security.AuthService;
 import com.andriynev.driver_helper_bot.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,11 +10,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -51,12 +52,57 @@ public class ApiController {
         }
     }
 
-    @Operation(summary = "Get users list")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Users",
-            content = { @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = User.class))) }))
+    @Operation(summary = "Get users list", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Users",
+                    content = { @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = User.class))) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json") }
+            )}
+    )
+    @PreAuthorize("hasAuthority('users:read')")
     @GetMapping("/users")
     public List<User> users() {
         return userService.getUsers();
+    }
+
+    @Operation(summary = "Update user", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "User",
+                    content = { @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = User.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Bad request",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json") }
+            )}
+    )
+    @PreAuthorize("hasAuthority('users:write')")
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<?> partialUpdate(@RequestBody UserUpdateRequest partialUpdate, @PathVariable("id") String id) {
+        try {
+
+            return ResponseEntity.ok().body(userService.partialUpdate(id, partialUpdate));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiError(e.getMessage()));
+        }
+
     }
 }

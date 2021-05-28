@@ -2,6 +2,7 @@ package com.andriynev.driver_helper_bot.security;
 
 import com.andriynev.driver_helper_bot.dao.ModeratorRepository;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -63,8 +63,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (!userDetails.isEnabled()) {
-            chain.doFilter(request, response);
-            return;
+            throw new ServletException("Access Denied", new AccessDeniedException("User is disabled"));
         }
 
         UsernamePasswordAuthenticationToken
