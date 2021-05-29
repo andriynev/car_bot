@@ -4,6 +4,7 @@ import com.andriynev.driver_helper_bot.dao.ModeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -13,19 +14,21 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.servlet.http.HttpServletResponse;
-
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ModeratorRepository moderatorRepository;
     private final JwtTokenFilter jwtTokenFilter;
+    private final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
 
     @Autowired
     public SecurityConfig(ModeratorRepository moderatorRepository,
-                          JwtTokenFilter jwtTokenFilter) {
+                          JwtTokenFilter jwtTokenFilter,
+                          ApiAuthenticationEntryPoint apiAuthenticationEntryPoint) {
         this.moderatorRepository = moderatorRepository;
         this.jwtTokenFilter = jwtTokenFilter;
+        this.apiAuthenticationEntryPoint = apiAuthenticationEntryPoint;
     }
 
     @Override
@@ -42,19 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Set unauthorized requests exception handler
         http = http
                 .exceptionHandling()
-                .accessDeniedHandler((request, response, ex) -> {
-                    response.sendError(
-                            HttpServletResponse.SC_FORBIDDEN,
-                            ex.getMessage()
-                    );
-                })
                 .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    ex.getMessage()
-                            );
-                        }
+                        apiAuthenticationEntryPoint
                 )
                 .and();
 

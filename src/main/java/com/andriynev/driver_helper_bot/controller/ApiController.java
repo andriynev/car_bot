@@ -40,16 +40,8 @@ public class ApiController {
             content = { @Content(mediaType = "application/json",
                     schema = @Schema(implementation = JwtTokenResponse.class)) }))
     @PostMapping("/telegram_auth")
-    public ResponseEntity<JwtTokenResponse> auth(@RequestBody JwtAuthRequest authenticationRequest) {
-
-        try {
-            JwtTokenResponse response = authService.processCredentials(authenticationRequest);
-
-            return ResponseEntity.ok()
-                    .body(response);
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public JwtTokenResponse auth(@RequestBody JwtAuthRequest authenticationRequest) {
+        return authService.processCredentials(authenticationRequest);
     }
 
     @Operation(summary = "Get users list", security = @SecurityRequirement(name = "jwtAuth"))
@@ -61,11 +53,11 @@ public class ApiController {
             ),
             @ApiResponse(
                     responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json") }
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
             ),
             @ApiResponse(
                     responseCode = "403", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json") }
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
             )}
     )
     @PreAuthorize("hasAuthority('users:read')")
@@ -83,26 +75,20 @@ public class ApiController {
             ),
             @ApiResponse(
                     responseCode = "400", description = "Bad request",
-                    content = { @Content(mediaType = "application/json") }
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
             ),
             @ApiResponse(
                     responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json") }
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
             ),
             @ApiResponse(
                     responseCode = "403", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json") }
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
             )}
     )
     @PreAuthorize("hasAuthority('users:write')")
     @PatchMapping("/users/{id}")
-    public ResponseEntity<?> partialUpdate(@RequestBody UserUpdateRequest partialUpdate, @PathVariable("id") String id) {
-        try {
-
-            return ResponseEntity.ok().body(userService.partialUpdate(id, partialUpdate));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ApiError(e.getMessage()));
-        }
-
+    public User partialUpdate(@RequestBody UserUpdateRequest partialUpdate, @PathVariable("id") String id) {
+        return userService.partialUpdate(id, partialUpdate);
     }
 }
