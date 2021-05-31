@@ -39,6 +39,10 @@ public class DispatcherService {
         }
 
         User user = identifyUser(inputMessage);
+        // skip disabled users
+        if (!user.isEnabled()) {
+            return null;
+        }
         State previousState = user.getState();
         Output out = routerService.route(user, inputMessage);
         user.setState(out.getState());

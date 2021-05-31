@@ -38,6 +38,11 @@ public class NewsService {
             }
 
             for (User user: users) {
+                // skip disabled users
+                if (!user.isEnabled()) {
+                    continue;
+                }
+                
                 if (!user.getSubscriptions().contains(entry.getKey())){
                     continue;
                 }
