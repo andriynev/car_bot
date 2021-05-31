@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JwtAuthRequest {
 
@@ -90,5 +92,27 @@ public class JwtAuthRequest {
     @JsonProperty("username")
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    // https://core.telegram.org/widgets/login
+    public String generateCheckString() {
+        List<String> parts = new ArrayList<>();
+        parts.add(String.format("auth_date=%d", authDate));
+
+        if (firstName != null) {
+            parts.add(String.format("first_name=%s", firstName));
+        }
+
+        parts.add(String.format("id=%d", id));
+
+        if (lastName != null) {
+            parts.add(String.format("last_name=%s", lastName));
+        }
+
+        if (username != null) {
+            parts.add(String.format("username=%s", username));
+        }
+
+        return String.join("\n", parts);
     }
 }

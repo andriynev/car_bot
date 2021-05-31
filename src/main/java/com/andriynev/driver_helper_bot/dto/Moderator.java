@@ -1,6 +1,7 @@
 package com.andriynev.driver_helper_bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,17 +25,17 @@ public class Moderator implements UserDetails {
 
     private String firstName;
     private String lastName;
-    private String username;
+    private String userName;
 
     public Moderator() {
     }
 
-    public Moderator(Long telegramID, String firstName, String lastName, String username) {
+    public Moderator(Long telegramID, String firstName, String lastName, String userName) {
         this.telegramID = telegramID;
         this.enabled = false;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.username = username;
+        this.userName = userName;
     }
 
     public String getId() {
@@ -45,6 +46,7 @@ public class Moderator implements UserDetails {
         this.id = id;
     }
 
+    @JsonIgnore
     public Long getTelegramID() {
         return telegramID;
     }
@@ -82,12 +84,20 @@ public class Moderator implements UserDetails {
         this.lastName = lastName;
     }
 
-    public void setUsername(String userName) {
-        this.username = userName;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -99,7 +109,7 @@ public class Moderator implements UserDetails {
                 ", permissions=" + permissions +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", userName='" + username + '\'' +
+                ", userName='" + userName + '\'' +
                 '}';
     }
 
@@ -120,12 +130,10 @@ public class Moderator implements UserDetails {
         return null;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
-        if (username == null) {
-            return "";
-        }
-        return username;
+        return id;
     }
 
     @JsonIgnore

@@ -53,7 +53,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // Get user identity
         UserDetails userDetails = moderatorRepository
-                .findByUsername(jwtTokenUtil.getUsernameFromToken(token))
+                .findById(jwtTokenUtil.getUsernameFromToken(token))
                 .orElse(null);
 
         // deny not exist and disabled users
@@ -66,9 +66,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throw new ServletException("Access Denied", new AccessDeniedException("User is disabled"));
         }
 
-        UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null,
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
                 userDetails.getAuthorities()
         );
 

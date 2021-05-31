@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ModeratorRepository extends MongoRepository<Moderator, String> {
     public Optional<Moderator> findByUsername(String username);
+    public Optional<Moderator> findByTelegramID(long id);
 }

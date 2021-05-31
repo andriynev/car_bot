@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.controller;
 
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.security.AuthService;
+import com.andriynev.driver_helper_bot.services.ModeratorService;
 import com.andriynev.driver_helper_bot.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -12,14 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -28,11 +26,13 @@ public class ApiController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final ModeratorService moderatorService;
 
     @Autowired
-    public ApiController(AuthService authService, UserService userService) {
+    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService) {
         this.authService = authService;
         this.userService = userService;
+        this.moderatorService = moderatorService;
     }
 
     @Operation(summary = "Authenticate moderator using Telegram login")
@@ -88,7 +88,112 @@ public class ApiController {
     )
     @PreAuthorize("hasAuthority('users:write')")
     @PatchMapping("/users/{id}")
-    public User partialUpdate(@RequestBody UserUpdateRequest partialUpdate, @PathVariable("id") String id) {
+    public User partialUserUpdate(@RequestBody UserUpdateRequest partialUpdate, @PathVariable("id") String id) {
         return userService.partialUpdate(id, partialUpdate);
+    }
+
+    @Operation(summary = "Get moderators list", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Moderators",
+                    content = { @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Moderator.class))) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('moderators:read')")
+    @GetMapping("/moderators")
+    public List<Moderator> moderators() {
+        return moderatorService.getModerators();
+    }
+
+    @Operation(summary = "Get moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Moderator",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Moderator.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Not found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAnyAuthority('moderators:read', 'moderators:read_all')")
+    @GetMapping("/moderators/{id}")
+    public Moderator getById(@PathVariable("id") String id) {
+
+        Optional<Moderator> moderator = moderatorService.findModeratorById(id);
+        if (!moderator.isPresent()) {
+            throw new ResourceNotFoundException("Moderator not found with ID: " + id);
+        }
+
+        return moderator.get();
+    }
+
+    @Operation(summary = "Update moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Moderator",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Moderator.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Bad request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('moderators:write_all') or (hasAuthority('moderators:write') and !#id.equals(authentication.name))")
+    @PatchMapping("/moderators/{id}")
+    public Moderator partialModeratorUpdate(@RequestBody ModeratorUpdateRequest partialUpdate, @PathVariable("id") String id) {
+        return moderatorService.partialUpdate(id, partialUpdate);
+    }
+
+    @Operation(summary = "Delete moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Moderator",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Bad request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('moderators:delete') and !#id.equals(authentication.name)")
+    @DeleteMapping("/moderators/{id}")
+    public void deleteModerator(@PathVariable("id") String id) {
+        moderatorService.delete(id);
     }
 }
