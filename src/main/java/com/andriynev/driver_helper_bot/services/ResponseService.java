@@ -95,6 +95,16 @@ public class ResponseService {
         driverHelperBot.sendPhoto(sendPhoto);
     }
 
+    public void sendMessage(String message, Long chatId, MessageType messageType) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId.toString());
+        if (messageType.equals(MessageType.MARKDOWN)) {
+            sendMessage.enableMarkdownV2(true);
+        }
+        sendMessage.setText(message);
+        driverHelperBot.sendMessage(sendMessage);
+    }
+
     private SendPhoto prepareNewsItem(NewsItem item, Long chatID) {
         String title = telegramMarkdownForbiddenSymbolsPattern
                 .matcher(item.getTitle())

@@ -18,6 +18,11 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+    public Optional<User> findUserById(String id) {
+        return userRepository.findUserById(id);
+    }
+
     public User getOrCreateUser(Long chatID, String firstName, String lastName, String userName) {
         Optional<User> user = userRepository.findUserByChatID(chatID);
 

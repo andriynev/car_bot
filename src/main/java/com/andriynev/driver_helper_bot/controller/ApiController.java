@@ -3,6 +3,7 @@ package com.andriynev.driver_helper_bot.controller;
 
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.security.AuthService;
+import com.andriynev.driver_helper_bot.services.MessageService;
 import com.andriynev.driver_helper_bot.services.ModeratorService;
 import com.andriynev.driver_helper_bot.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,24 +28,34 @@ public class ApiController {
     private final AuthService authService;
     private final UserService userService;
     private final ModeratorService moderatorService;
+    private final MessageService messageService;
 
     @Autowired
-    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService) {
+    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService, MessageService messageService) {
         this.authService = authService;
         this.userService = userService;
         this.moderatorService = moderatorService;
+        this.messageService = messageService;
     }
 
-    @Operation(summary = "Authenticate moderator using Telegram login")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Success",
+    @Operation(summary = "Authenticate moderator using Telegram login", tags = "auth")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
             content = { @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = JwtTokenResponse.class)) }))
+                    schema = @Schema(implementation = JwtTokenResponse.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)) }
+            )
+    })
     @PostMapping("/telegram_auth")
     public JwtTokenResponse auth(@RequestBody JwtAuthRequest authenticationRequest) {
         return authService.processCredentials(authenticationRequest);
     }
 
-    @Operation(summary = "Get users list", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Get users list", security = @SecurityRequirement(name = "jwtAuth"), tags = "users")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Users",
@@ -66,7 +77,7 @@ public class ApiController {
         return userService.getUsers();
     }
 
-    @Operation(summary = "Update user", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Update user", security = @SecurityRequirement(name = "jwtAuth"), tags = "users")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "User",
@@ -92,7 +103,7 @@ public class ApiController {
         return userService.partialUpdate(id, partialUpdate);
     }
 
-    @Operation(summary = "Get moderators list", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Get moderators list", security = @SecurityRequirement(name = "jwtAuth"), tags = "moderators")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Moderators",
@@ -114,7 +125,7 @@ public class ApiController {
         return moderatorService.getModerators();
     }
 
-    @Operation(summary = "Get moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Get moderator", security = @SecurityRequirement(name = "jwtAuth"), tags = "moderators")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Moderator",
@@ -146,7 +157,7 @@ public class ApiController {
         return moderator.get();
     }
 
-    @Operation(summary = "Update moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Update moderator", security = @SecurityRequirement(name = "jwtAuth"), tags = "moderators")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Moderator",
@@ -172,7 +183,7 @@ public class ApiController {
         return moderatorService.partialUpdate(id, partialUpdate);
     }
 
-    @Operation(summary = "Delete moderator", security = @SecurityRequirement(name = "jwtAuth"))
+    @Operation(summary = "Delete moderator", security = @SecurityRequirement(name = "jwtAuth"), tags = "moderators")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Moderator",
@@ -195,5 +206,30 @@ public class ApiController {
     @DeleteMapping("/moderators/{id}")
     public void deleteModerator(@PathVariable("id") String id) {
         moderatorService.delete(id);
+    }
+
+    @Operation(summary = "Send message", security = @SecurityRequirement(name = "jwtAuth"), tags = "messages")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Bad request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('messages:write')")
+    @PostMapping("/send_message")
+    public void sendMessage(@RequestBody SendMessageRequest request) {
+        messageService.sendMessage(request);
     }
 }
