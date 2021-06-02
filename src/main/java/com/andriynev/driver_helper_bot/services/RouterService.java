@@ -17,12 +17,13 @@ public class RouterService {
 
 
     @Autowired
-    public RouterService(Handler expertService, Handler placesService, Handler subscriptionsService, GroupHandler mainMenuService, MessagesProperties messagesProperties) {
+    public RouterService(Handler expertService, Handler placesService, Handler subscriptionsService, Handler tutorialsService, GroupHandler mainMenuService, MessagesProperties messagesProperties) {
         handlers.put(expertService.getType(), expertService);
         handlers.put(placesService.getType(), placesService);
         handlers.put(subscriptionsService.getType(), subscriptionsService);
+        handlers.put(tutorialsService.getType(), tutorialsService);
 
-        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, placesService, subscriptionsService));
+        List<Handler> group = new ArrayList<>(Arrays.asList(expertService, placesService, subscriptionsService, tutorialsService));
         mainMenuService.setHandlers(group);
         handlers.put(mainMenuService.getType(), mainMenuService);
         this.messagesProperties = messagesProperties;
