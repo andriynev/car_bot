@@ -52,6 +52,7 @@ public class ResponseService {
                 break;
             case CALLBACK_ANSWER:
                 replyToUser = sendAnswerCallbackQuery(outputMessage);
+                break;
             default:
                 break;
         }
@@ -83,6 +84,8 @@ public class ResponseService {
                 return;
             case LOCATION:
                 sendLocation(message);
+            case IMAGE:
+                sendImage(message);
         }
     }
 
@@ -148,6 +151,15 @@ public class ResponseService {
         }
 
         return sendMessage;
+    }
+
+    private void sendImage(OutputMessage outputMessage) {
+        SendPhoto sendPhoto = SendPhoto.builder()
+                .photo(new InputFile(outputMessage.getPicture()))
+                .chatId(outputMessage.getChatID().toString()).build();
+        sendPhoto.disableNotification();
+
+        driverHelperBot.sendPhoto(sendPhoto);
     }
 
     private AnswerCallbackQuery sendAnswerCallbackQuery(OutputMessage outputMessage) {

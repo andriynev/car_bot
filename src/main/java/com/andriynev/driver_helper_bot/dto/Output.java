@@ -60,6 +60,12 @@ public class Output {
         this.latitude = latitude;
     }
 
+    public Output(State state, String picture) {
+        this.state = state;
+        this.picture = picture;
+        this.type = ResponseType.IMAGE;
+    }
+
     public ResponseType getType() {
         return type;
     }
