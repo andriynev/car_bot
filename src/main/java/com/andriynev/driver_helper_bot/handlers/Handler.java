@@ -9,5 +9,7 @@ public interface Handler {
     public String getType();
     public String getHumanReadableName();
     public void setHumanReadableName(String name);
+    public String getDescription();
+    public void setDescription(String description);
 }
 

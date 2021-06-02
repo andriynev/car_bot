@@ -18,11 +18,13 @@ public class SubscriptionsService implements Handler {
     private static final String initialStep = "initial";
     private final static String viewMenuStep = "view_menu";
     private final MessagesProperties messagesProperties;
+    private String description;
 
     @Autowired
     public SubscriptionsService(MessagesProperties messagesProperties) {
         this.messagesProperties = messagesProperties;
         this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
+        this.setDescription(this.messagesProperties.getMessage(nameMessageKey+"-description"));
     }
 
     @Override
@@ -36,6 +38,16 @@ public class SubscriptionsService implements Handler {
             return;
         }
         this.humanReadableName = humanReadableName;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

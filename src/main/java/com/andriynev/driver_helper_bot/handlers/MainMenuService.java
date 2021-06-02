@@ -41,6 +41,16 @@ public class MainMenuService implements GroupHandler {
     }
 
     @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public void setDescription(String description) {
+
+    }
+
+    @Override
     public Output handle(User user, State state, InputMessage userInput) {
         switch (state.getStep()){
             case initialStep:
@@ -59,7 +69,7 @@ public class MainMenuService implements GroupHandler {
                     Output out = new Output(
                             new State(handler.get().getType(), initialStep),
                             ResponseType.QUESTION,
-                            handler.get().getHumanReadableName()
+                            handler.get().getDescription()
                     );
                     out.setRedirect(true);
                     return out;

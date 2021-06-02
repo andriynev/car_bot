@@ -24,6 +24,7 @@ public class ExpertService implements Handler {
     private String defaultMessage;
     private String humanReadableName = type;
     private final MessagesProperties messagesProperties;
+    private String description;
 
     @Autowired
     public ExpertService(CarRepairTreeRepository carRepairTreeRepository, MessagesProperties messagesProperties) {
@@ -31,6 +32,7 @@ public class ExpertService implements Handler {
         this.messagesProperties = messagesProperties;
         this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
         this.defaultMessage = this.messagesProperties.getMessage(defaultMessageKey);
+        this.setDescription(this.messagesProperties.getMessage(nameMessageKey+"-description"));
     }
 
     @Override
@@ -215,6 +217,16 @@ public class ExpertService implements Handler {
         }
 
         humanReadableName = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     private Optional<CarRepairTree> findByState(CarRepairTree tree, State state) {

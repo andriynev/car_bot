@@ -28,6 +28,7 @@ public class PlacesService implements Handler {
     private final static String giveLocationStep = "give_location";
     private final static String placeInfoStep = "place_info";
     private final MessagesProperties messagesProperties;
+    private String description;
 
     private PlacesApiClient placesApiClient;
 
@@ -36,6 +37,7 @@ public class PlacesService implements Handler {
         this.placesApiClient = placesApiClient;
         this.messagesProperties = messagesProperties;
         this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
+        this.setDescription(this.messagesProperties.getMessage(nameMessageKey+"-description"));
     }
 
     @Override
@@ -68,6 +70,16 @@ public class PlacesService implements Handler {
             return;
         }
         this.humanReadableName = humanReadableName;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     private Output getPlaceInfoStepOutput(InputMessage userInput) {

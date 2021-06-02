@@ -19,12 +19,14 @@ public class TutorialsService implements Handler {
     private final static String nameMessageKey = "tutorials";
     private String humanReadableName = type;
     private final MessagesProperties messagesProperties;
+    private String description;
 
     @Autowired
     public TutorialsService(TutorialService tutorialService, MessagesProperties messagesProperties) {
         this.tutorialService = tutorialService;
         this.messagesProperties = messagesProperties;
         this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
+        this.setDescription(this.messagesProperties.getMessage(nameMessageKey+"-description"));
     }
 
     @Override
@@ -80,5 +82,15 @@ public class TutorialsService implements Handler {
         }
 
         humanReadableName = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
