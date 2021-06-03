@@ -3,10 +3,7 @@ package com.andriynev.driver_helper_bot.controller;
 
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.security.AuthService;
-import com.andriynev.driver_helper_bot.services.MessageService;
-import com.andriynev.driver_helper_bot.services.ModeratorService;
-import com.andriynev.driver_helper_bot.services.TutorialService;
-import com.andriynev.driver_helper_bot.services.UserService;
+import com.andriynev.driver_helper_bot.services.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -33,14 +32,16 @@ public class ApiController {
     private final ModeratorService moderatorService;
     private final MessageService messageService;
     private final TutorialService tutorialService;
+    private final PlacesInfoService placesInfoService;
 
     @Autowired
-    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService, MessageService messageService, TutorialService tutorialService) {
+    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService, MessageService messageService, TutorialService tutorialService, PlacesInfoService placesInfoService) {
         this.authService = authService;
         this.userService = userService;
         this.moderatorService = moderatorService;
         this.messageService = messageService;
         this.tutorialService = tutorialService;
+        this.placesInfoService = placesInfoService;
     }
 
     @Operation(summary = "Authenticate moderator using Telegram login", tags = "auth")
@@ -369,5 +370,88 @@ public class ApiController {
     @DeleteMapping("/tutorials/{id}")
     public void deleteTutorial(@PathVariable("id") String id) {
         tutorialService.delete(id);
+    }
+
+    @Operation(summary = "Get places info", security = @SecurityRequirement(name = "jwtAuth"), tags = "places")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Places info",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PlacesInfo.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Not found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('places:read')")
+    @GetMapping("/places")
+    public PlacesInfo getPlacesInfo() {
+
+        Optional<PlacesInfo> placesInfo = placesInfoService.find();
+        if (!placesInfo.isPresent()) {
+            throw new ResourceNotFoundException("Places info not found");
+        }
+
+        return placesInfo.get();
+    }
+
+    @Operation(summary = "Get places allowed types", security = @SecurityRequirement(name = "jwtAuth"), tags = "places")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Places types",
+                    content = { @Content(mediaType = "application/json") }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Not found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('places:read')")
+    @GetMapping("/places/allowed_types")
+    public HashMap<String, String> getPlacesAllowedTypes() {
+        return placesInfoService.allowedTypes();
+    }
+
+    @Operation(summary = "Update places info", security = @SecurityRequirement(name = "jwtAuth"), tags = "places")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Places info",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PlacesInfo.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Bad request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('places:write')")
+    @PostMapping("/places")
+    public PlacesInfo placesInfoUpdate(@RequestBody PlacesInfo placesInfo) {
+        return placesInfoService.update(placesInfo);
     }
 }

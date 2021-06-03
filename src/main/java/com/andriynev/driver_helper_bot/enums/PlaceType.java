@@ -3,7 +3,9 @@ package com.andriynev.driver_helper_bot.enums;
 public enum PlaceType {
     CAR_REPAIR("car-repair"),
     CAR_WASH("car-wash"),
-    GAS_STATION("gas-station");
+    GAS_STATION("gas-station"),
+    STORE("car-store"),
+    PARKING("parking");
 
     private final String placeType;
 
