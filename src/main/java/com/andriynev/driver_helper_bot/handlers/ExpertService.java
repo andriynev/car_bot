@@ -99,10 +99,19 @@ public class ExpertService implements Handler {
 
                 buttons.add(new InlineButton(answerValue, answer.getKey()));
             }
+
+            String question = "";
+            if (subTree.get().getQuestion().containsKey(UKLanguage)) {
+                question = subTree.get().getQuestion().get(UKLanguage);
+            }
+
+            if (subTree.get().getQuestion().isEmpty()) {
+                question = subTree.get().getQuestion().get(defaultLanguage);
+            }
             return new Output(
                     new State(type, subTree.get().getStep()),
                     ResponseType.QUESTION,
-                    "❓ " + subTree.get().getQuestion(),
+                    "❓ " + question,
                     buttons
             );
         }
