@@ -3,19 +3,10 @@ package com.andriynev.driver_helper_bot.dto;
 import java.util.List;
 
 public class PlaceInfo {
-    private String name;
     private String type;
     private List<String> brands;
 
     public PlaceInfo() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getType() {
@@ -37,8 +28,7 @@ public class PlaceInfo {
     @Override
     public String toString() {
         return "PlaceInfo{" +
-                "name='" + name + '\'' +
-                ", type='" + type + '\'' +
+                "type='" + type + '\'' +
                 ", brands=" + brands +
                 '}';
     }

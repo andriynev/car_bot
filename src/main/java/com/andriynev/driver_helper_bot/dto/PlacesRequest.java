@@ -7,6 +7,7 @@ public class PlacesRequest {
     private PlaceType placeType;
     private boolean openNow;
     private PlaceOrderBy orderBy;
+    private String brand;
 
     public PlacesRequest() {
     }
@@ -35,12 +36,21 @@ public class PlacesRequest {
         this.orderBy = orderBy;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
     @Override
     public String toString() {
         return "PlacesRequest{" +
                 "placeType=" + placeType +
                 ", openNow=" + openNow +
                 ", orderBy=" + orderBy +
+                ", brand='" + brand + '\'' +
                 '}';
     }
 }

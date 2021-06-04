@@ -68,6 +68,17 @@ public class PlacesApiClient {
                 break;
             case GAS_STATION:
                 req.type(PlaceType.GAS_STATION).keyword(this.messagesProperties.getMessage(request.getPlaceType().toString()));
+                if (request.getBrand() != null && !request.getBrand().isEmpty()) {
+                    req.name(request.getBrand());
+                }
+                break;
+            case STORE:
+                req.type(PlaceType.STORE)
+                        .keyword(this.messagesProperties.getMessage(request.getPlaceType().toString()))
+                        .name(this.messagesProperties.getMessage("car"));
+                break;
+            case PARKING:
+                req.type(PlaceType.PARKING);
                 break;
         }
 

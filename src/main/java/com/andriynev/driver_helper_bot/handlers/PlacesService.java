@@ -1,5 +1,6 @@
 package com.andriynev.driver_helper_bot.handlers;
 
+import com.andriynev.driver_helper_bot.dao.PlacesInfoRepository;
 import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.dto.*;
 import com.andriynev.driver_helper_bot.enums.MessageType;
@@ -11,10 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PlacesService implements Handler {
@@ -23,17 +21,20 @@ public class PlacesService implements Handler {
     private String humanReadableName = type;
     private final static String initialStep = "initial";
     private final static String placeTypeStep = "place_type";
+    private final static String brandStep = "brand";
     private final static String openNowStep = "open_now";
     private final static String orderByStep = "order_by";
     private final static String giveLocationStep = "give_location";
     private final static String placeInfoStep = "place_info";
     private final MessagesProperties messagesProperties;
     private String description;
+    private final PlacesInfoRepository placesInfoRepository;
 
     private PlacesApiClient placesApiClient;
 
     @Autowired
-    public PlacesService(PlacesApiClient placesApiClient, MessagesProperties messagesProperties) {
+    public PlacesService(PlacesApiClient placesApiClient, PlacesInfoRepository placesInfoRepository, MessagesProperties messagesProperties) {
+        this.placesInfoRepository = placesInfoRepository;
         this.placesApiClient = placesApiClient;
         this.messagesProperties = messagesProperties;
         this.setHumanReadableName(this.messagesProperties.getMessage(nameMessageKey));
@@ -46,6 +47,8 @@ public class PlacesService implements Handler {
         switch (state.getStep()){
             case placeTypeStep:
                 return getPlaceTypeStepOutput(user, userInput);
+            case brandStep:
+                return getBrandStepOutput(user, userInput);
             case openNowStep:
                 return getOpenNowStepOutput(user, userInput);
             case orderByStep:
@@ -201,7 +204,14 @@ public class PlacesService implements Handler {
     }
 
     private Output getPlaceTypeStepOutput(User user, InputMessage userInput) {
-        List<InlineButton> placeTypesButtons = getPlaceTypesButtons();
+        Optional<PlacesInfo> placesInfo = getPlacesInfo();
+        if (!placesInfo.isPresent()) {
+            return new Output(
+                    new State(type, initialStep),
+                    ResponseType.MESSAGE,
+                    this.messagesProperties.getMessage("sorry-try-again"));
+        }
+        List<InlineButton> placeTypesButtons = getPlaceTypesButtons(placesInfo.get());
 
         boolean isCorrectAnswer = false;
         for (InlineButton btn: placeTypesButtons) {
@@ -219,6 +229,35 @@ public class PlacesService implements Handler {
                     placeTypesButtons);
         }
 
+        PlacesRequest req = user.getPlacesRequest();
+        req.setPlaceType(getPlaceTypeByUserMessage(userInput.getMessage()));
+        user.setPlacesRequest(req);
+
+        List<String> brands = new ArrayList<>();
+        for (PlaceInfo place : placesInfo.get().getPlaces()) {
+            if (!place.getType().equals(userInput.getMessage())) {
+                continue;
+            }
+
+            brands = place.getBrands();
+            break;
+        }
+
+        if (brands.size() > 0) {
+            List<InlineButton> buttons = getBrandsButtons(brands);
+            Output output = new Output(
+                    new State(type, brandStep),
+                    ResponseType.QUESTION,
+                    this.messagesProperties.getMessage("brand"),
+                    buttons);
+            output.setMessages(Collections.singletonList(new Output(
+                    new State(type, brandStep),
+                    ResponseType.EDIT_BUTTONS,
+                    placeTypesButtons
+            )));
+            return output;
+        }
+
         List<InlineButton> buttons = getOpenNowButtons();
         Output output = new Output(
                 new State(type, openNowStep),
@@ -230,9 +269,72 @@ public class PlacesService implements Handler {
                 ResponseType.EDIT_BUTTONS,
                 placeTypesButtons
         )));
+
+        return output;
+    }
+
+    private Output getBrandStepOutput(User user, InputMessage userInput) {
+        Optional<PlacesInfo> placesInfo = getPlacesInfo();
+        if (!placesInfo.isPresent()) {
+            return new Output(
+                    new State(type, initialStep),
+                    ResponseType.MESSAGE,
+                    this.messagesProperties.getMessage("sorry-try-again"));
+        }
+
+        List<String> brands = new ArrayList<>();
+        for (PlaceInfo place : placesInfo.get().getPlaces()) {
+            if (!place.getType().equals(user.getPlacesRequest().getPlaceType().toString())) {
+                continue;
+            }
+
+            brands = place.getBrands();
+            break;
+        }
+
+        if (brands.size() == 0) {
+            return new Output(
+                    new State(type, initialStep),
+                    ResponseType.MESSAGE,
+                    this.messagesProperties.getMessage("sorry-try-again"));
+        }
+
+        List<InlineButton> brandsButtons = getBrandsButtons(brands);
+
+        boolean isCorrectAnswer = false;
+        for (InlineButton btn: brandsButtons) {
+            if (btn.getData().equals(userInput.getMessage())) {
+                isCorrectAnswer = true;
+                btn.setTitle(btn.getTitle()+" ✅");
+            }
+        }
+
+        if (!isCorrectAnswer) {
+            return new Output(
+                    new State(type, openNowStep),
+                    ResponseType.QUESTION,
+                    this.messagesProperties.getMessage("brand"),
+                    brandsButtons);
+        }
+
+        List<InlineButton> buttons = getOpenNowButtons();
+        Output output = new Output(
+                new State(type, openNowStep),
+                ResponseType.QUESTION,
+                this.messagesProperties.getMessage("open-now"),
+                buttons);
+        output.setMessages(Collections.singletonList(new Output(
+                new State(type, openNowStep),
+                ResponseType.EDIT_BUTTONS,
+                brandsButtons
+        )));
+
         PlacesRequest req = user.getPlacesRequest();
-        req.setPlaceType(getPlaceTypeByUserMessage(userInput.getMessage()));
-        user.setPlacesRequest(req);
+        if (!userInput.getMessage().equals("does-not-matter")) {
+            req.setBrand(userInput.getMessage());
+            user.setPlacesRequest(req);
+        }
+
         return output;
     }
 
@@ -312,8 +414,19 @@ public class PlacesService implements Handler {
         return output;
     }
 
+    private Optional<PlacesInfo> getPlacesInfo() {
+        return this.placesInfoRepository.findFirstByIdIsNotNull();
+    }
+
     private Output getInitialStepOutput(User user) {
-        List<InlineButton> buttons = getPlaceTypesButtons();
+        Optional<PlacesInfo> placesInfo = getPlacesInfo();
+        if (!placesInfo.isPresent()) {
+            return new Output(
+                    new State(type, initialStep),
+                    ResponseType.MESSAGE,
+                    this.messagesProperties.getMessage("sorry-try-again"));
+        }
+        List<InlineButton> buttons = getPlaceTypesButtons(placesInfo.get());
         user.setPlacesRequest(new PlacesRequest());
         return new Output(
                 new State(type, placeTypeStep),
@@ -376,11 +489,21 @@ public class PlacesService implements Handler {
         return output;
     }
 
-    private List<InlineButton> getPlaceTypesButtons() {
+    private List<InlineButton> getPlaceTypesButtons(PlacesInfo placesInfo) {
         List<InlineButton> buttons = new ArrayList<>();
-        for (PlaceType type : PlaceType.values()) {
-            buttons.add(new InlineButton(this.messagesProperties.getMessage(type.toString()), type.toString()));
+        for (PlaceInfo placeInfo : placesInfo.getPlaces()) {
+            buttons.add(new InlineButton(this.messagesProperties.getMessage(placeInfo.getType()), placeInfo.getType()));
         }
+        return buttons;
+    }
+
+    private List<InlineButton> getBrandsButtons(List<String> brands) {
+        List<InlineButton> buttons = new ArrayList<>();
+        for (String brand : brands) {
+            buttons.add(new InlineButton(brand));
+        }
+
+        buttons.add(new InlineButton(this.messagesProperties.getMessage("does-not-matter"), "does-not-matter"));
         return buttons;
     }
 
