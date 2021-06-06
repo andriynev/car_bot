@@ -23,7 +23,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,6 +33,7 @@ public class ResponseService {
     private final String markdownV2MessageType = "MarkdownV2";
     DriverHelperBot driverHelperBot;
     private final Pattern telegramMarkdownForbiddenSymbolsPattern = Pattern.compile("([.+\\-!=>()#_*\\[\\]~`|{}]{1,1})");
+    private final Pattern telegramMarkdownLinkPattern = Pattern.compile("\\[[\\p{L}\\s\\d]+\\]\\(((?:\\/|https?:\\/\\/)[\\w\\d./?=#]+)\\)");
     private final MessagesProperties messagesProperties;
 
     @Lazy
@@ -103,7 +106,9 @@ public class ResponseService {
         sendMessage.setChatId(chatId.toString());
         if (messageType.equals(MessageType.MARKDOWN)) {
             sendMessage.enableMarkdownV2(true);
+            message = prepareMarkdownMessage(message);
         }
+
         sendMessage.setText(message);
         driverHelperBot.sendMessage(sendMessage);
     }
@@ -259,11 +264,7 @@ public class ResponseService {
         sendMessage.setChatId(chatId.toString());
         if (messageType.equals(MessageType.MARKDOWN)) {
             sendMessage.enableMarkdownV2(true);
-            textMessage = telegramMarkdownForbiddenSymbolsPattern
-                    .matcher(textMessage)
-                    .replaceAll("\\\\$1");
-
-            textMessage = textMessage.replace("^bold", "*");
+            textMessage = prepareMarkdownMessage(textMessage);
         }
 
         sendMessage.setText(textMessage);
@@ -271,5 +272,27 @@ public class ResponseService {
         return sendMessage;
     }
 
+    private String prepareMarkdownMessage(String message) {
+        List<String> allMatches = new ArrayList<>();
+        Matcher m = telegramMarkdownLinkPattern.matcher(message);
+        while (m.find()) {
+            allMatches.add(m.group());
+        }
 
+        for (int i = 0; i < allMatches.size(); i++) {
+            message = message.replace(allMatches.get(i), String.format("^link%d^", i));
+        }
+
+        message = telegramMarkdownForbiddenSymbolsPattern
+                .matcher(message)
+                .replaceAll("\\\\$1");
+
+        for (int i = 0; i < allMatches.size(); i++) {
+            message = message.replace(String.format("^link%d^", i), allMatches.get(i));
+        }
+
+        message = message.replace("^bold^", "*");
+        message = message.replace("^italic^", "_");
+        return message;
+    }
 }

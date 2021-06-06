@@ -455,7 +455,7 @@ public class PlacesService implements Handler {
 
         String duration = item.getDurationHumanReadable();
 
-        String caption = String.format("^bold%s^bold - %s\n" + // bold name
+        String caption = String.format("^bold^%s^bold^ - %s\n" + // bold name
                         "%s: %s, %s: %s\n" +
                         "%s: %s, %s: %s",
                 name, address,

@@ -2,6 +2,7 @@ package com.andriynev.driver_helper_bot.handlers;
 
 
 import com.andriynev.driver_helper_bot.dto.*;
+import com.andriynev.driver_helper_bot.enums.MessageType;
 import com.andriynev.driver_helper_bot.enums.ResponseType;
 import com.andriynev.driver_helper_bot.messages.MessagesProperties;
 import com.andriynev.driver_helper_bot.services.TutorialService;
@@ -141,6 +142,8 @@ public class TutorialsService implements Handler {
                 menuButtons,
                 null
         );
+
+        output.setMessageType(MessageType.MARKDOWN);
 
         output.setMessages(Collections.singletonList(
                 new Output(new State(type, selectItemStep), tutorial.get().getImage()))
