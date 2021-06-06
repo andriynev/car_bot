@@ -135,19 +135,87 @@ public class TutorialsService implements Handler {
             );
         }
 
+        List<String> messages = splitMessageToParts(tutorial.get().getText());
+        if (messages.size() == 0) {
+            return new Output(
+                    new State(type, selectItemStep),
+                    ResponseType.QUESTION,
+                    this.messagesProperties.getMessage("sorry-try-again")
+            );
+        }
+
         Output output = new Output(
                 new State(type, selectItemStep),
                 ResponseType.MESSAGE,
-                tutorial.get().getText(),
+                messages.get(messages.size() - 1),
                 menuButtons,
                 null
         );
-
         output.setMessageType(MessageType.MARKDOWN);
 
-        output.setMessages(Collections.singletonList(
-                new Output(new State(type, selectItemStep), tutorial.get().getImage()))
-        );
+        messages.remove(messages.size() - 1);
+
+        List<Output> outputMessages = new ArrayList<>();
+        outputMessages.add(new Output(new State(type, selectItemStep), tutorial.get().getImage()));
+
+        for (String message: messages) {
+            Output subOutput = new Output(new State(type, selectItemStep), ResponseType.MESSAGE, message);
+            subOutput.setMessageType(MessageType.MARKDOWN);
+            outputMessages.add(subOutput);
+        }
+
+        output.setMessages(outputMessages);
         return output;
+    }
+
+    private List<String> splitMessageToParts(String message) {
+        int maxMessageLength = 4096;
+        List<String> messages = new ArrayList<>();
+        if (message.length() < maxMessageLength) {
+            messages.add(message);
+            return messages;
+        }
+
+        int beginIndex = 0;
+        int endIndex = maxMessageLength;
+        int length = message.length();
+
+        endIndex = findLastSplitChar(message.substring(beginIndex, endIndex));
+        String substring = message.substring(beginIndex, endIndex);
+        messages.add(substring);
+        length = length - substring.length();
+        beginIndex = endIndex;
+
+        while (length > maxMessageLength) {
+            endIndex = endIndex + maxMessageLength;
+            endIndex = findLastSplitChar(message.substring(beginIndex, endIndex));
+            substring = message.substring(beginIndex, endIndex);
+            messages.add(substring);
+            length = length - substring.length();
+            beginIndex = endIndex;
+        }
+
+        messages.add(message.substring(beginIndex));
+        return messages;
+    }
+
+    private int findLastSplitChar(String message) {
+        int index = 0;
+        index = message.lastIndexOf(".");
+        if (index != -1) {
+            return index;
+        }
+
+        index = message.lastIndexOf("\n");
+        if (index != -1) {
+            return index;
+        }
+
+        index = message.lastIndexOf(" ");
+        if (index != -1) {
+            return index;
+        }
+
+        return message.length() - 1;
     }
 }
