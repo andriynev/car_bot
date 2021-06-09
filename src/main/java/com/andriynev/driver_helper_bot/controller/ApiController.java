@@ -33,15 +33,17 @@ public class ApiController {
     private final MessageService messageService;
     private final TutorialService tutorialService;
     private final PlacesInfoService placesInfoService;
+    private final ExpertSystemService expertSystemService;
 
     @Autowired
-    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService, MessageService messageService, TutorialService tutorialService, PlacesInfoService placesInfoService) {
+    public ApiController(AuthService authService, UserService userService, ModeratorService moderatorService, MessageService messageService, TutorialService tutorialService, PlacesInfoService placesInfoService, ExpertSystemService expertSystemService) {
         this.authService = authService;
         this.userService = userService;
         this.moderatorService = moderatorService;
         this.messageService = messageService;
         this.tutorialService = tutorialService;
         this.placesInfoService = placesInfoService;
+        this.expertSystemService = expertSystemService;
     }
 
     @Operation(summary = "Authenticate moderator using Telegram login", tags = "auth")
@@ -453,5 +455,38 @@ public class ApiController {
     @PostMapping("/places")
     public PlacesInfo placesInfoUpdate(@RequestBody PlacesInfo placesInfo) {
         return placesInfoService.update(placesInfo);
+    }
+
+
+    @Operation(summary = "Get car repair tree", security = @SecurityRequirement(name = "jwtAuth"), tags = "expert")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Car repair tree",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarRepairTree.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "403", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Not found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)) }
+            )}
+    )
+    @PreAuthorize("hasAuthority('expert:read')")
+    @GetMapping("/car_repair_tree")
+    public CarRepairTree getCarRepairTree() {
+
+        Optional<CarRepairTree> carRepairTree = expertSystemService.find();
+        if (!carRepairTree.isPresent()) {
+            throw new ResourceNotFoundException("Tree not found");
+        }
+
+        return carRepairTree.get();
     }
 }
